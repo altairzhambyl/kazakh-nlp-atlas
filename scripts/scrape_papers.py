@@ -18,7 +18,7 @@ The editorial layer (flagship-model comparison, gap analysis) lives in
 build_map.py, not here, so this file stays a faithful record of what exists.
 
 Usage:
-    python code/scrape_papers.py [--out paper/survey/papers.json] [--no-s2]
+    python scripts/scrape_papers.py [--out paper/survey/papers.json] [--no-s2]
 """
 
 from __future__ import annotations

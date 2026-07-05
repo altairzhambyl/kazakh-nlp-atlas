@@ -13,7 +13,7 @@ Separation of concerns (deliberate):
   * build_map.py      -> human CURATION + analysis + presentation
 
 Usage:
-    python code/build_map.py [--data paper/survey/papers.json]
+    python scripts/build_map.py [--data paper/survey/papers.json]
                              [--out  paper/survey/index.html]
 """
 
