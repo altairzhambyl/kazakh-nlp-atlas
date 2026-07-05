@@ -4,7 +4,7 @@ topic: "kazakh-turkic-nlp"
 nodes: 12
 papers: 10
 sources: 2
-uncertain_claims: 9
+uncertain_claims: 17
 tags: ["moc"]
 ---
 # Topic: kazakh-turkic-nlp

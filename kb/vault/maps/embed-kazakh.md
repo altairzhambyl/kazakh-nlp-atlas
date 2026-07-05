@@ -41,5 +41,6 @@ Kazakh embedding is a near-greenfield with a thin but concrete evidence base. Es
 ## Related topics
 - [[decoder-to-embedder]] — 2 shared nodes
 - [[embed-sota]] — 2 shared nodes
+- [[mteb-upstream-kazqad-upstream-status]] — 2 shared nodes
 
 [[Home]]

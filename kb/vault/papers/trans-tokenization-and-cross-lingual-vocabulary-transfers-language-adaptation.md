@@ -6,17 +6,17 @@ arxiv_id: "2408.04303"
 doi: null
 hf_repo: null
 year: 2024
-topics: ["qymyzlm-architecture-fork"]
-claims: 2
+topics: ["qymyzlm-architecture-fork", "turkic-other-langs-non-kazakh-turkic-nlp"]
+claims: 3
 uncertain_claims: 1
 verdicts: []
 aliases: ["Trans-Tokenization and Cross-lingual Vocabulary Transfers: Language Adaptation of LLMs for Low-Resource NLP", "arXiv:2408.04303", "arxiv:2408.04303"]
-tags: ["paper", "topic/qymyzlm-architecture-fork"]
+tags: ["paper", "topic/qymyzlm-architecture-fork", "topic/turkic-other-langs-non-kazakh-turkic-nlp"]
 ---
 # Trans-Tokenization and Cross-lingual Vocabulary Transfers: Language Adaptation of LLMs for Low-Resource NLP
 
 [arXiv](https://arxiv.org/abs/2408.04303)
-**Topics:** [[qymyzlm-architecture-fork]]
+**Topics:** [[qymyzlm-architecture-fork]], [[turkic-other-langs-non-kazakh-turkic-nlp]]
 
 > [!abstract]
 > The development of monolingual language models for low and mid-resource languages continues to be hindered by the difficulty in sourcing high-quality training data. In this study, we present a novel cross-lingual vocabulary transfer strategy, trans-tokenization, designed to tackle this challenge and enable more efficient language adaptation. Our approach focuses on adapting a high-resource monolin …
@@ -38,6 +38,13 @@ tags: ["paper", "topic/qymyzlm-architecture-fork"]
 > **Source:** Absence verified across arXiv/ACL sweeps 2024-2026 (queries EN+RU, incl. Kazakh-local artifacts); scale facts from arXiv:2408.04303, 2412.07633, 2406.11477, 2405.07883; SozKZ arXiv:2603.20854 (KB) · **Sweep:** `slm-arch-for-kazakh`
 
 **Cited KB notes:** [[zero-shot-tokenizer-transfer]], [[sozkz-training-efficient-small-language-models-for-kazakh-from-scratch]]
+
+> [!note] CLAIM — turkic-other-langs-non-kazakh-turkic-nlp
+> [tt] Trans-tokenization for Tatar (KB already has the headline number) — re-confirming with exact provenance: swapping Mistral-7B's tokenizer to a dedicated Tatar one and continual-pretraining on only 107M tokens (41M embeddings-only + 66M with top/bottom-2 layers unfrozen) reaches PPL 10.96, 49.34% on SART word-analogy benchmark, chrF 53.7±0.2 on short-text MT. SART itself (arXiv:1904.00365, Khusainova & Khan, Innopolis) is the original Tatar word-embedding evaluation resource (similarity/analogy/relatedness), modeled directly on the Russian RUSSE benchmark design.
+>
+> **Numbers:** Tatar swap-CPT: 107M tokens, PPL 10.96, SART analogies 49.34%, chrF 53.7±0.2
+> **Relevance:** Decision (1): Tatar (Kipchak, same branch as Kazakh) already has both a word-embedding intrinsic benchmark (SART) AND a validated tokenizer-swap+CPT recipe at 7B scale — useful cross-check corpus for the lab's own trans-tokenization ablation, though still no sub-1B swap-tax measurement (KB gap persists).
+> **Source:** arXiv:2408.04303 (already in KB) + arXiv:1904.00365 (SART, confirmed via search) · **Sweep:** `turkic-landscape`
 
 ## Related
 - [[zero-shot-tokenizer-transfer|Zero-Shot Tokenizer Transfer]] — Both study full tokenizer swap; ZeTT closes the gap at 7B with <1B tokens but tested only encoder/Mistral-7B, leaving sub-1B swap tax open

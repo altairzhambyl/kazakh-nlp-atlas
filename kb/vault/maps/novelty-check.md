@@ -4,7 +4,7 @@ topic: "novelty-check"
 nodes: 18
 papers: 16
 sources: 2
-uncertain_claims: 15
+uncertain_claims: 16
 tags: ["moc"]
 ---
 # Topic: novelty-check

@@ -4,19 +4,19 @@ type: "paper"
 title: "Why do language models perform worse for morphologically complex languages?"
 arxiv_id: "2411.14198"
 doi: null
-hf_repo: null
+hf_repo: "uonlp/CulturaX"
 year: 2024
-topics: ["tokenizer-morphology", "kazakh-tokenizer-fertility-vs-byte-premi"]
-claims: 4
-uncertain_claims: 1
+topics: ["tokenizer-morphology", "kazakh-tokenizer-fertility-vs-byte-premi", "turkic-turkish"]
+claims: 5
+uncertain_claims: 2
 verdicts: []
 aliases: ["Why do language models perform worse for morphologically complex languages?", "arXiv:2411.14198", "arxiv:2411.14198"]
-tags: ["paper", "topic/tokenizer-morphology", "topic/kazakh-tokenizer-fertility-vs-byte-premi"]
+tags: ["paper", "topic/tokenizer-morphology", "topic/kazakh-tokenizer-fertility-vs-byte-premi", "topic/turkic-turkish"]
 ---
 # Why do language models perform worse for morphologically complex languages?
 
 [arXiv](https://arxiv.org/abs/2411.14198)
-**Topics:** [[tokenizer-morphology]], [[kazakh-tokenizer-fertility-vs-byte-premi]]
+**Topics:** [[tokenizer-morphology]], [[kazakh-tokenizer-fertility-vs-byte-premi]], [[turkic-turkish]]
 
 > [!abstract]
 > Language models perform differently across languages. It has been previously suggested that morphological typology may explain some of this variability (Cotterell et al., 2018). We replicate previous analyses and find additional new evidence for a performance gap between agglutinative and fusional languages, where fusional languages, such as English, tend to have better language modeling performan …
@@ -52,6 +52,13 @@ tags: ["paper", "topic/tokenizer-morphology", "topic/kazakh-tokenizer-fertility-
 > **Source:** arXiv 2411.14198 / arXiv 2403.00686 (Arnett/Chang/Bergen) · **Sweep:** `slm-architecture-2026-07`
 
 **Cited KB notes:** [[a-bit-of-a-problem-measurement-disparities-in-dataset-sizes-across-languages]]
+
+> [!warning] UNCERTAIN — turkic-turkish
+> The CulturaX-derived Turkish:Kazakh ratio (23x) CONFLICTS with the KB's existing XLM-R/CommonCrawl-derived ratio (Kazakh 5.8x smaller than Turkish, not ~23x). Both are legitimate but measure different corpora/cleaning pipelines; the ratio is corpus-pipeline-dependent, not a fixed constant.
+>
+> **Numbers:** CulturaX: tr 64.29B / kk 2.80B = 22.9x. XLM-R/CC (KB): kk is 5.8x smaller than tr.
+> **Relevance:** Direct conflict flag per protocol: any 'Kazakh is Nx smaller than Turkish' claim in the atlas must cite which corpus it's measured in — do not average 5.8x and 23x.
+> **Source:** huggingface.co/datasets/uonlp/CulturaX vs KB node from arXiv:2411.14198 (citing XLM-R/CC stats) · **Sweep:** `turkic-landscape`
 
 ## Related
 - [[scaling-data-constrained-language-models|Scaling Data-Constrained Language Models]] — Concludes gap is data-quantity driven after byte scaling; grounds it in data-constrained scaling laws

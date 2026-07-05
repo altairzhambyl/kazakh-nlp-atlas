@@ -6,17 +6,17 @@ arxiv_id: "2606.18717"
 doi: null
 hf_repo: null
 year: 2026
-topics: ["novelty-check-has-any-2026-preprint-impl", "sparse-memory-2026-engram-lineage-beyond"]
-claims: 2
+topics: ["novelty-check-has-any-2026-preprint-impl", "sparse-memory-2026-engram-lineage-beyond", "turkic-other-langs-non-kazakh-turkic-nlp"]
+claims: 3
 uncertain_claims: 0
 verdicts: []
 aliases: ["Morpheus: A Morphology-Aware Neural Tokenizer and Word Embedder for Turkish", "arXiv:2606.18717", "arxiv:2606.18717"]
-tags: ["paper", "topic/novelty-check-has-any-2026-preprint-impl", "topic/sparse-memory-2026-engram-lineage-beyond"]
+tags: ["paper", "topic/novelty-check-has-any-2026-preprint-impl", "topic/sparse-memory-2026-engram-lineage-beyond", "topic/turkic-other-langs-non-kazakh-turkic-nlp"]
 ---
 # Morpheus: A Morphology-Aware Neural Tokenizer and Word Embedder for Turkish
 
 [arXiv](https://arxiv.org/abs/2606.18717)
-**Topics:** [[novelty-check-has-any-2026-preprint-impl]], [[sparse-memory-2026-engram-lineage-beyond]]
+**Topics:** [[novelty-check-has-any-2026-preprint-impl]], [[sparse-memory-2026-engram-lineage-beyond]], [[turkic-other-langs-non-kazakh-turkic-nlp]]
 
 > [!abstract]
 > Turkish is agglutinative: meaning is carried by morphemes, yet the subword tokenizers that drive modern language models split words by corpus statistics, fragmenting semantically loaded suffixes and -- in the case of WordPiece and rule-based analyzers -- failing to decode their output back to the original text. This paper presents \textbf{Morpheus}, a neural morpheme-boundary model for Turkish tha …
@@ -38,6 +38,13 @@ tags: ["paper", "topic/novelty-check-has-any-2026-preprint-impl", "topic/sparse-
 > **Numbers:** BPC 1.425 (lowest among reversible tokenizers); MorphScore macro-F1 0.61 vs ~0.32 for subword; ~19% less GPU memory than 64K-vocab subword tokenizers; ~50K vocab.
 > **Relevance:** Two uses for the design panel: (a) it is a ready architecture template for the morpheme SEGMENTER that would generate morpheme-keyed Engram keys for Kazakh (differentiable, lossless, Turkic-validated); (b) it corrects the KB lineage note — Morpheus does NOT key memory on morphemes, so it does not close the novelty gap. Naming collision ('Morpheus' also = a speculative-decoding paper) must be disambiguated in citations.
 > **Source:** arXiv:2606.18717 (abstract fetched 2026-07-04) · **Sweep:** `slm-arch-for-kazakh`
+
+> [!note] CLAIM — turkic-other-langs-non-kazakh-turkic-nlp
+> [tr] Morpheus (arXiv:2606.18717, Turkish): a reversible, morphology-aware neural tokenizer-and-embedder (decode(encode(w))=w exactly, via a differentiable Poisson-binomial boundary model) achieves the lowest bits-per-character among reversible tokenizers (1.425), roughly DOUBLES gold morphological alignment vs the subword family (MorphScore macro-F1 0.61 vs ~0.32), uses ~19% less GPU memory than 64K-vocab subword tokenizers, and as a frozen embedder BEATS multilingual retriever BGE-M3 and monolingual BERTurk on lexical/morphology tasks: root-family retrieval MAP 0.85, same-root verification ROC-AUC 1.00.
+>
+> **Numbers:** BPC 1.425 (lowest reversible); MorphScore macro-F1 0.61 vs ~0.32 subword baseline; GPU memory -19% vs 64K subword vocab; lexical retrieval MAP 0.85; same-root ROC-AUC 1.00 (beats BGE-M3, BERTurk)
+> **Relevance:** Decision (3): first in-family (Turkic) proof that morphology-aware tokenization/embedding can beat a strong multilingual retriever (BGE-M3) on LEXICAL tasks — but it has NOT been extended to semantic/SEMANTIC retrieval (MTEB-style STS/QA) or to any Kipchak language (Kazakh/Uzbek/Tatar); combining morpheme-aware embedding with semantic retrieval on a Kipchak language remains open and directly buildable on the lab's morpheme-keyed-memory research line.
+> **Source:** arXiv:2606.18717, confirmed via targeted search of abstract/results · **Sweep:** `turkic-landscape`
 
 ## Related
 - [[verchol-grammar-first-tokenization-for-agglutinative-languages|VerChol -- Grammar-First Tokenization for Agglutinative Languages]] — Both morphology-aware Turkic tokenizers; VerChol validated only on Tamil, Morpheus built for Turkish

@@ -30,6 +30,8 @@ tags: ["paper", "topic/sota-slm", "topic/tokenizer-morphology"]
 > **Relevance:** Directly validates the <2.0 tok/word target as both hard and high-value. A morphology-aware Kazakh tokenizer (respecting vowel-harmony allomorphs and Cyrillic Ә/Ғ/Қ/Ң/Ө/Ұ/Ү/Һ) is the single biggest lever to make ~9-10B Kazakh tokens act like far more effective compute.
 > **Source:** arXiv 2603.05883 (VerChol grammar-first tokenization, abstract via search); Gemma-2 tokenizer analyses; arXiv 2605.29992 (Turkish tokenizer surgery) · **Sweep:** `slm-architecture-2026-07`
 
+**Cited KB notes:** [[adapting-multilingual-embedding-models-to-turkish-via-cross-lingual-tokenizer]]
+
 > [!note] CLAIM — tokenizer-morphology
 > Kazakh's Cyrillic->Latin transition is legally targeted for ~2031 and real-world text is heavily kk/ru code-switched. Transliteration tools (QazNLTK, national standard) give deterministic Cyrillic<->Latin mapping. VerChol (grammar-first FST tokenization) shows script-agnostic grammar rules can tokenize agglutinative languages, but is only implemented/validated on Tamil, with Turkic listed as future adaptation.
 >
