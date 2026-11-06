@@ -4,7 +4,7 @@ topic: "data-efficiency-10b-kazakh-10b-token-pre"
 nodes: 8
 papers: 7
 sources: 1
-uncertain_claims: 4
+uncertain_claims: 5
 tags: ["moc"]
 ---
 # Topic: data-efficiency-10b-kazakh-10b-token-pre

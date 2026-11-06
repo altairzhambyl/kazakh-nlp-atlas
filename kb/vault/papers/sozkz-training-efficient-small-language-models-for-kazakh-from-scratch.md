@@ -44,6 +44,8 @@ tags: ["paper", "topic/tokenizer-morphology", "topic/kazakh-turkic-nlp", "topic/
 > **Relevance:** The tokenizer is the single highest-leverage inference decision for Kazakh — hitting <2.0 fertility multiplies effective context in words, halves cache/word, and speeds words/s, all at once. Report 'effective context in WORDS', not tokens.
 > **Source:** Derivation; SozKZ arXiv:2603.20854; fertility framing arXiv:2602.19174 (TurkicNLP) · **Sweep:** `slm-architecture-2026-07`
 
+**Cited KB notes:** [[turkicnlp-an-nlp-toolkit-for-turkic-languages]]
+
 > [!note] CLAIM — novelty-check
 > The CLOSEST prior on 'sub-1B model purpose-built from scratch for one low-resource agglutinative language' is SozKZ — but it is architecturally VANILLA (Llama backbone, 50K BPE, no memory, no morphology module). This is the user's strongest differentiation opening: same target, same scale, zero architectural novelty.
 >

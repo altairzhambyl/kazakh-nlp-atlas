@@ -6,17 +6,17 @@ arxiv_id: "2503.01493"
 doi: null
 hf_repo: "issai/LLama-3.1-KazLLM-1.0-8B"
 year: 2025
-topics: ["tokenizer-morphology", "kazakh-turkic-nlp", "training-recipes", "novelty-check", "architecture-fork", "continual-pt-lowres-qlora-vs-full-cpt-re", "data-efficiency-10b-kazakh-10b-token-pre", "win-bar-protocol-audit"]
-claims: 14
-uncertain_claims: 1
+topics: ["tokenizer-morphology", "kazakh-turkic-nlp", "training-recipes", "novelty-check", "architecture-fork", "continual-pt-lowres-qlora-vs-full-cpt-re", "data-efficiency-10b-kazakh-10b-token-pre", "win-bar-protocol-audit", "turkic-pan-models"]
+claims: 16
+uncertain_claims: 2
 verdicts: []
 aliases: ["Sherkala-Chat: Building a State-of-the-Art LLM for Kazakh in a Moderately Resourced Setting", "arXiv:2503.01493", "arxiv:2503.01493"]
-tags: ["paper", "topic/tokenizer-morphology", "topic/kazakh-turkic-nlp", "topic/training-recipes", "topic/novelty-check", "topic/architecture-fork", "topic/continual-pt-lowres-qlora-vs-full-cpt-re", "topic/data-efficiency-10b-kazakh-10b-token-pre", "topic/win-bar-protocol-audit"]
+tags: ["paper", "topic/tokenizer-morphology", "topic/kazakh-turkic-nlp", "topic/training-recipes", "topic/novelty-check", "topic/architecture-fork", "topic/continual-pt-lowres-qlora-vs-full-cpt-re", "topic/data-efficiency-10b-kazakh-10b-token-pre", "topic/win-bar-protocol-audit", "topic/turkic-pan-models"]
 ---
 # Sherkala-Chat: Building a State-of-the-Art LLM for Kazakh in a Moderately Resourced Setting
 
 [arXiv](https://arxiv.org/abs/2503.01493)
-**Topics:** [[tokenizer-morphology]], [[kazakh-turkic-nlp]], [[training-recipes]], [[novelty-check]], [[architecture-fork]], [[continual-pt-lowres-qlora-vs-full-cpt-re]], [[data-efficiency-10b-kazakh-10b-token-pre]], [[win-bar-protocol-audit]]
+**Topics:** [[tokenizer-morphology]], [[kazakh-turkic-nlp]], [[training-recipes]], [[novelty-check]], [[architecture-fork]], [[continual-pt-lowres-qlora-vs-full-cpt-re]], [[data-efficiency-10b-kazakh-10b-token-pre]], [[win-bar-protocol-audit]], [[turkic-pan-models]]
 
 > [!abstract]
 > Llama-3.1-Sherkala-8B-Chat, or Sherkala-Chat (8B) for short, is a state-of-the-art instruction-tuned open generative large language model (LLM) designed for Kazakh. Sherkala-Chat (8B) aims to enhance the inclusivity of LLM advancements for Kazakh speakers. Adapted from the LLaMA-3.1-8B model, Sherkala-Chat (8B) is trained on 45.3B tokens across Kazakh, English, Russian, and Turkish. With 8 billion …
@@ -122,6 +122,20 @@ tags: ["paper", "topic/tokenizer-morphology", "topic/kazakh-turkic-nlp", "topic/
 > **Numbers:** 51.6 (base) vs 41.4 (chat), delta -10.2pp, same protocol
 > **Relevance:** Changes the paper's framing: the CLAUDE.md 'ceiling reference Sherkala-8B 41.4' silently compares the lab's base model to a chat model; a reviewer will re-bracket against the 51.6 base number.
 > **Source:** arXiv:2503.01493 Table 4 (both rows, same 0-shot protocol) · **Sweep:** `slm-arch-for-kazakh`
+
+> [!warning] UNCERTAIN — turkic-pan-models
+> [kk][tr][ru] Sherkala-8B's own published data-mixture ablation (Figure 1, Kazakh-MMLU-style internal eval) reports Kazakh-only training (ratio 1:0:0) at ~51% accuracy, degrading when Russian+Turkish are added at some intermediate ratios, but the chosen final ratio 3:1:3 (Kazakh:Russian+Turkish:English) is stated as giving 'the best overall results.' This is a DIFFERENT number/protocol from the KB's canonical Sherkala-Chat KazMMLU 41.4% (final released model, cross-protocol).
+>
+> **Numbers:** ablation: Kazakh-only ~51% vs final chosen mixture 3:1:3; final released KazMMLU (different eval, KB) 41.4%
+> **Relevance:** Direct evidence bearing on decision (2)/(3): the paper's own authors motivate including Turkish [tr] and Russian [ru] data specifically 'to enable better performance in Kazakh via cross-lingual transfer', but the ablation numbers as extracted are internally inconsistent (higher score with LESS data) — needs re-verification before citing as a transfer-coefficient result in the atlas.
+> **Source:** arXiv:2503.01493v2 (Sherkala-Chat paper) · **Sweep:** `turkic-landscape`
+
+> [!note] CLAIM — turkic-pan-models
+> [kk][tr][ru] Sherkala's tokenizer (Llama-3 vocab +25% high-frequency Kazakh BPE tokens) reduces fertility for Kazakh from 4.73 to 2.04 tok/word (-56.8%), for Russian from 2.56 to 2.21 (-13.8%), and for Turkish from 2.23 to 1.82 (-18.4%) vs the stock Llama-3.1 tokenizer, measured on held-out subsets not seen during tokenizer training.
+>
+> **Numbers:** Kazakh 4.73->2.04 (-56.8%); Russian 2.56->2.21 (-13.8%); Turkish 2.23->1.82 (-18.4%)
+> **Relevance:** Confirms Turkish [tr] already tokenizes ~2.3x more efficiently than Kazakh even in a shared Kazakh-optimized vocabulary — quantifies the fertility gap the lab must close (target <2.0 for Kazakh, Turkish is already there at 1.82 with a Kazakh-biased vocab, would be even lower with a Turkish-biased one).
+> **Source:** arXiv:2503.01493v2 · **Sweep:** `turkic-landscape`
 
 ## Related
 - [[pretraining-language-models-using-translationese|Pretraining Language Models Using Translationese]] — translationese's cheap low-resource MT-filtering result predicts Sherkala's 24% synthetic-MT Kazakh works at low cost

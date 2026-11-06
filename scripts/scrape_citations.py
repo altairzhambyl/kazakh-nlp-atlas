@@ -14,7 +14,7 @@ clearly labelled `method="tfidf-fallback"`.
 Output: paper/survey/citations.json
 
 Usage:
-    python code/scrape_citations.py
+    python scripts/scrape_citations.py
 """
 
 from __future__ import annotations

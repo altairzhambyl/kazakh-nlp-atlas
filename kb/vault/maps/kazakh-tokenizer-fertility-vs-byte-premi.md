@@ -4,7 +4,7 @@ topic: "kazakh-tokenizer-fertility-vs-byte-premi"
 nodes: 6
 papers: 5
 sources: 1
-uncertain_claims: 3
+uncertain_claims: 4
 tags: ["moc"]
 ---
 # Topic: kazakh-tokenizer-fertility-vs-byte-premi

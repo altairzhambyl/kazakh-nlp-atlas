@@ -39,7 +39,7 @@ The topic covers converting causal decoder LMs into text embedders, directly rel
 
 ## Sources & findings (3)
 - [[huggingface-co-blog-embedding-quantization|huggingface.co/blog/embedding-quantization]] — Matryoshka + quantization is a near-free market feature: int8 scalar quantization loses almost nothing (recall -1.46%, M…
-- [[aclanthology-org-2025-findings-emnlp-471-tr-mteb-emnlp-2025|aclanthology.org/2025.findings-emnlp.471 (TR-MTEB, EMNLP 2025 Findings…]] — TR-MTEB (closest Turkic analogue) is a second warning: 26 Turkish datasets, 6 task types, a corpus of 34.2M weakly super…
+- [[aclanthology-org-2025-findings-emnlp-471-tr-mteb-emnlp-2025-b28b6536|aclanthology.org/2025.findings-emnlp.471 (TR-MTEB, EMNLP 2025 Findings…]] — TR-MTEB (closest Turkic analogue) is a second warning: 26 Turkish datasets, 6 task types, a corpus of 34.2M weakly super…
 - [[researchgate-publication-396213005-comparative-analysis-of|ResearchGate publication 396213005 (Comparative Analysis of Embedding…]] — Multilingual embedders underperform on Kazakh today: a 2025 comparative study on ~7,700 Kazakh question-context pairs (i…
 
 ## Related topics
@@ -47,5 +47,6 @@ The topic covers converting causal decoder LMs into text embedders, directly rel
 - [[embed-kazakh]] — 2 shared nodes
 - [[embed-sota]] — 2 shared nodes
 - [[embeddings-training]] — 2 shared nodes
+- [[mteb-upstream-kazqad-upstream-status]] — 2 shared nodes
 
 [[Home]]

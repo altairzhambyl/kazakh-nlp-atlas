@@ -6,17 +6,17 @@ arxiv_id: "2404.04487"
 doi: null
 hf_repo: "issai/kazqad-retrieval"
 year: 2024
-topics: ["embed-sota", "embed-kazakh", "decoder-to-embedder", "joint-generative-embedding-head-on-one-6"]
-claims: 5
+topics: ["embed-sota", "embed-kazakh", "decoder-to-embedder", "joint-generative-embedding-head-on-one-6", "mteb-upstream-kazqad-upstream-status"]
+claims: 6
 uncertain_claims: 0
 verdicts: []
 aliases: ["KazQAD: Kazakh Open-Domain Question Answering Dataset", "arXiv:2404.04487", "arxiv:2404.04487"]
-tags: ["paper", "topic/embed-sota", "topic/embed-kazakh", "topic/decoder-to-embedder", "topic/joint-generative-embedding-head-on-one-6"]
+tags: ["paper", "topic/embed-sota", "topic/embed-kazakh", "topic/decoder-to-embedder", "topic/joint-generative-embedding-head-on-one-6", "topic/mteb-upstream-kazqad-upstream-status"]
 ---
 # KazQAD: Kazakh Open-Domain Question Answering Dataset
 
 [arXiv](https://arxiv.org/abs/2404.04487)
-**Topics:** [[embed-sota]], [[embed-kazakh]], [[decoder-to-embedder]], [[joint-generative-embedding-head-on-one-6]]
+**Topics:** [[embed-sota]], [[embed-kazakh]], [[decoder-to-embedder]], [[joint-generative-embedding-head-on-one-6]], [[mteb-upstream-kazqad-upstream-status]]
 
 > [!abstract]
 > We introduce KazQAD -- a Kazakh open-domain question answering (ODQA) dataset -- that can be used in both reading comprehension and full ODQA settings, as well as for information retrieval experiments. KazQAD contains just under 6,000 unique questions with extracted short answers and nearly 12,000 passage-level relevance judgements. We use a combination of machine translation, Wikipedia search, an …
@@ -57,6 +57,10 @@ tags: ["paper", "topic/embed-sota", "topic/embed-kazakh", "topic/decoder-to-embe
 > **Numbers:** Full-corpus anchor: NDCG@10 0.389 / MRR 0.382 (BM25+reranker, reported). Hard-neg anchor: mE5-large MRR 0.909 [reported, pools unpublished; 0.4490 under HardTFIDF99 vs 0.9189 under KazQAD-100-local in successor card]. Measured dense baselines under lab protocol: 0.
 > **Relevance:** The embedding deliverable's target number does not exist yet — the design panel cannot fix a win condition until mE5-large/BGE-M3/Qwen3-Emb-0.6B are run through evallab; this is a ~2-3 GPU-hour Kaggle job and the single highest-leverage prerequisite.
 > **Source:** evallab/src/kazeval/hardneg.py, evallab/src/kazeval/tasks/kazqad_retrieval.py, evallab/README.md + results/*.json; arXiv:2404.04487; web sweep 2026-07-04 · **Sweep:** `slm-arch-for-kazakh`
+
+> [!note] CLAIM — mteb-upstream-kazqad-upstream-status
+> The original KazQAD paper (arXiv:2404.04487, IS2AI/ISSAI) reports retrieval baselines NDCG@10=0.389, MRR=0.382 on a corpus of ~800K Kazakh Wikipedia passages with ~6,000 questions — this is the dataset a PR would need to newly wrap into an mteb AbsTaskRetrieval, since it does not exist upstream.
+> **Source:** https://arxiv.org/pdf/2404.04487 ; https://github.com/IS2AI/KazQAD · **Sweep:** `2026-07-mteb-upstream-recon`
 
 ## Related
 - [[kazmmlu-evaluating-language-models-on-kazakh-russian-and-regional-knowledge-of|KazMMLU: Evaluating Language Models on Kazakh, Russian, and Regional Knowledge of Kazakhst…]] — The two Kazakh axes a joint ≤600M head must serve simultaneously — KazQAD (retrieval) and KazMMLU (generation)

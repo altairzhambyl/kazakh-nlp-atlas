@@ -4,7 +4,7 @@ topic: "architecture-fork"
 nodes: 5
 papers: 5
 sources: 0
-uncertain_claims: 5
+uncertain_claims: 6
 tags: ["moc"]
 ---
 # Topic: architecture-fork

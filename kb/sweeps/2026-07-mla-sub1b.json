@@ -131,7 +131,7 @@
    "findings": [
     {
      "claim": "Strongest direct evidence MLA converges to GQA-or-better quality within 25-50B tokens at sub-1B: 'Hardware-Efficient Attention for Fast Decoding' (Dao-AILab) pretrained param-matched MHA/MQA/GQA-4/GTA-4/MLA/GLA-2 from scratch on FineWeb-Edu at 183M (25B tokens), 433M/876M/1.47B (50B tokens each), GPT-3 config + Llama-3 arch, param-matched by widening FFN (not by changing heads). MLA beats GQA-4 at both sub-1B checkpoints where MLA also caches LESS.",
-     "source": "arXiv 2505.21487 (Zadouri, Strauss, Dao), PDF Tables 2-6 read directly; extracted text /tmp/claude-1000/-home-altairzhambyl-projects-SLMs-basic/98053e10-7c62-465c-acd3-b6c763138a63/scratchpad/gla.txt",
+     "source": "arXiv 2505.21487 (Zadouri, Strauss, Dao), PDF Tables 2-6 read directly; extracted text <local-scratch>/scratchpad/gla.txt",
      "numbers": "FineWeb-Edu val ppl — 183M@25B: MLA 16.318 vs GQA-4 16.578 vs MHA 16.715; 433M@50B: MLA 12.561 vs GQA-4 12.922; 876M@50B: MLA 11.363 vs GQA-4 11.340 (5-dataset avg ppl: MLA 24.929 vs GQA-4 25.286); 1.47B@50B: MLA 10.256 vs GQA-4 10.202, downstream 7-bench avg MLA 59.1% vs GQA-4 60.2%. Downstream 433M: MLA 54.9% vs GQA-4 54.5% vs GLA-2 55.4%. Configs: LR 2.6e-4/1.45e-4/1.2e-4/1.0e-4 (S/M/L/XL), batch 512 (XL 256), AdamW b=(0.9,0.95), wd 0.1, Llama-3 128K tokenizer.",
      "relevance": "Exactly the lab's scale (433M ~ target 500-600M) and closest published token budget (25-50B vs lab's 9-30B kk). MLA wins on ppl AND downstream at 183M/433M while caching 288 vs GQA-4's 512 elem/tok/layer — the pro-MLA half of the verdict.",
      "uncertain": false
@@ -145,7 +145,7 @@
     },
     {
      "claim": "The counter-evidence (TPA/ICML 2025) is real but weaker than the KB summary implies. Exact quote: 'Multi-Head Latent Attention (MLA) (blue curves) generally trains more slowly and yields higher validation losses.' This is FIGURE-level only (Figures 4/9) — the paper publishes NO numeric loss/ppl table. Its own downstream tables show MLA at parity or better: 0-shot 9-bench avg at 353M: MLA 50.13 vs GQA 50.35 vs MHA 50.11; at 773M: MLA 53.32 vs GQA 52.30 vs MHA 52.52 (MLA best non-TPA). Config caveats: GQA had only 2 KV heads (cache 256 elem/layer) while MLA used d_c=512 + rope 32 (544 elem, 2.1x GQA's cache); MLA was param-matched by inflating head count (h=23 at 353M vs MHA's 16); nanoGPT recipe, all sizes 50B tokens of FineWeb-Edu-100B.",
-     "source": "arXiv 2501.06425 v4 PDF, Section 6 lines + Tables 2-3 + Appendix H.1 (Tables 9-10), read directly; extracted text /tmp/claude-1000/-home-altairzhambyl-projects-SLMs-basic/98053e10-7c62-465c-acd3-b6c763138a63/scratchpad/tpa.txt (convergence quote at lines 808-812)",
+     "source": "arXiv 2501.06425 v4 PDF, Section 6 lines + Tables 2-3 + Appendix H.1 (Tables 9-10), read directly; extracted text <local-scratch>/scratchpad/tpa.txt (convergence quote at lines 808-812)",
      "numbers": "353M: d_model=1024, 24L, d_c=512, d'_c(q_lora)=1024, rope 32, d_h=64, h_MLA=23; max LR 3e-4, batch 480, 50B tokens, 8x A100. Downstream avg: MLA 50.13 / GQA-2kv 50.35 / MHA 50.11 (353M); MLA 53.32 / GQA 52.30 (773M)",
      "relevance": "This is the paper behind the lab's fear that MLA needs extra tokens at sub-1B. Verified: the slow-convergence claim exists but is curve-only, uses a cache-disadvantaged MLA config (d_c=8*d_h), and its own benchmarks contradict a quality deficit at 50B tokens. Do not let this alone flip the architecture to GQA.",
      "uncertain": false

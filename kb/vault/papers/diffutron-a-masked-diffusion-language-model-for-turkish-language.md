@@ -30,4 +30,6 @@ tags: ["paper", "topic/novelty-check"]
 > **Relevance:** Shows the Turkic-architecture design space is opening in 2026 but along different axes (diffusion, transfer). The user's morpheme-memory autoregressive SLM does not collide with these; cite to show awareness of the Turkic architecture frontier.
 > **Source:** arXiv:2603.20466 (Diffutron); arXiv:2604.06202 (Cross-Lingual Transfer Turkic) · **Sweep:** `slm-architecture-2026-07`
 
+**Cited KB notes:** [[cross-lingual-transfer-and-parameter-efficient-adaptation-in-the-turkic]]
+
 [[Home]]

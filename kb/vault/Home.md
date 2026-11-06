@@ -1,11 +1,11 @@
 ---
 type: "home"
 tags: ["moc"]
-nodes: 255
-papers: 170
-sources: 85
-topics: 40
-claims: 448
+nodes: 389
+papers: 197
+sources: 192
+topics: 57
+claims: 672
 ---
 # Kazakh NLP Atlas — Research Vault
 
@@ -22,8 +22,8 @@ regenerate with `python scripts/build_vault.py`.
    and REFUTED as not load-bearing for design decisions.
 4. `kb_id` in frontmatter is the canonical citation key used by /design-panel and /research-sweep.
 
-> [!warning] Verification coverage ~0.9%
-> Only 4/448 claims carry a CONFIRMED/REFUTED/PLAUSIBLE verdict from adversarial review. The rest render as `[!note] CLAIM` — asserted by a single sweep agent and NOT yet audited. Treat unaudited numbers as provisional, not vetted.
+> [!warning] Verification coverage ~0.6%
+> Only 4/672 claims carry a CONFIRMED/REFUTED/PLAUSIBLE verdict from adversarial review. The rest render as `[!note] CLAIM` — asserted by a single sweep agent and NOT yet audited. Treat unaudited numbers as provisional, not vetted.
 
 ## Pillars
 
@@ -32,25 +32,25 @@ regenerate with `python scripts/build_vault.py`.
 | Topic | Nodes | Uncertain |
 | --- | --- | --- |
 | [[mla-at-sub-1b-scale]] | 19 | 8 |
-| [[sota-slm]] | 17 | 5 |
-| [[continual-pt-lowres-qlora-vs-full-cpt-re]] | 16 | 4 |
-| [[tokenizer-morphology]] | 16 | 6 |
-| [[training-recipes]] | 16 | 5 |
+| [[sota-slm]] | 17 | 12 |
+| [[continual-pt-lowres-qlora-vs-full-cpt-re]] | 16 | 5 |
+| [[tokenizer-morphology]] | 16 | 8 |
+| [[training-recipes]] | 16 | 6 |
 | [[hybrid-efficient-attention-architectures]] | 14 | 6 |
 | [[inference-tts]] | 14 | 6 |
 | [[attention-kv-architecture-sub-1b]] | 12 | 8 |
 | [[residual-stream-stability-qymyzlm-design]] | 12 | 7 |
 | [[small-lm-training-recipes-qymyzlm-design]] | 11 | 6 |
 | [[tokenizer-agglutinative]] | 11 | 2 |
-| [[data-efficiency-10b-kazakh-10b-token-pre]] | 8 | 4 |
+| [[data-efficiency-10b-kazakh-10b-token-pre]] | 8 | 5 |
 | [[kazakh-morphological-segmentation-qualit]] | 8 | 3 |
 | [[sparse-memory-2026-engram-lineage-beyond]] | 8 | 7 |
 | [[deepseek-tech]] | 7 | 5 |
 | [[gla-2-gta-arxiv-2505-21487-zadouri-strau]] | 7 | 1 |
 | [[qymyzlm-architecture-fork]] | 7 | 1 |
-| [[kazakh-tokenizer-fertility-vs-byte-premi]] | 6 | 3 |
+| [[kazakh-tokenizer-fertility-vs-byte-premi]] | 6 | 4 |
 | [[post-hoc-attachment-of-engram-style-cond]] | 6 | 4 |
-| [[architecture-fork]] | 5 | 5 |
+| [[architecture-fork]] | 5 | 6 |
 | [[kv-cache-architecture]] | 5 | 1 |
 | [[mla-upcycling-bespoke-tokenizer]] | 5 | 3 |
 | [[mla-vs-gqa-convergence-cost]] | 5 | 3 |
@@ -74,22 +74,44 @@ regenerate with `python scripts/build_vault.py`.
 
 | Topic | Nodes | Uncertain |
 | --- | --- | --- |
-| [[novelty-check]] | 18 | 15 |
-| [[kazakh-turkic-nlp]] | 12 | 9 |
+| [[novelty-check]] | 18 | 16 |
+| [[kazakh-turkic-nlp]] | 12 | 17 |
 | [[hardware-gate]] | 8 | 2 |
 | [[kaggle-t4x2-compute-vram-budget-for-the]] | 8 | 2 |
 | [[novelty-check-has-any-2026-preprint-impl]] | 6 | 8 |
 | [[parameter-counting-convention-and-iso-si]] | 3 | 4 |
-| [[win-bar-protocol-audit]] | 3 | 3 |
+| [[win-bar-protocol-audit]] | 3 | 4 |
+
+### Cross-cutting / meta
+
+| Topic | Nodes | Uncertain |
+| --- | --- | --- |
+| [[mteb-upstream-task-api]] | 16 | 0 |
+| [[turkic-kyrgyz-non-kazakh-turkic-nlp-land]] | 15 | 18 |
+| [[turkic-uzbek-non-kazakh-turkic-nlp-lands]] | 15 | 19 |
+| [[turkic-pan-benchmarks-non-kazakh-turkic]] | 14 | 17 |
+| [[mteb-upstream-contrib-process]] | 13 | 0 |
+| [[mteb-upstream-pr-precedents]] | 13 | 0 |
+| [[turkic-other-langs-non-kazakh-turkic-nlp]] | 13 | 14 |
+| [[turkic-pan-models]] | 13 | 17 |
+| [[turkic-embeddings-retrieval-non-kazakh-t]] | 12 | 8 |
+| [[mteb-upstream-kazqad-upstream-status]] | 11 | 0 |
+| [[turkic-turkish]] | 11 | 11 |
+| [[non-kazakh-turkic-nlp-landscape-prior-ar]] | 9 | 5 |
+| [[turkic-nlp-landscape-uzbek-monolingual-p]] | 7 | 4 |
+| [[non-kazakh-turkic-nlp-landscape-embeddin]] | 6 | 2 |
+| [[non-kazakh-turkic-nlp-landscape-reconcil]] | 5 | 10 |
+| [[turkic-non-kazakh-nlp-landscape-targeted]] | 5 | 4 |
+| [[turkic-nlp-landscape-cheap-tokenizer-sur]] | 2 | 1 |
 
 ## All topics A–Z
 
 | Topic | Focus | Nodes | Papers | Uncertain |
 | --- | --- | --- | --- | --- |
-| [[architecture-fork]] | The core decision — adapt a strong base (continual pretraining / tokenizer transplant) vs… | 5 | 5 | 5 |
+| [[architecture-fork]] | The core decision — adapt a strong base (continual pretraining / tokenizer transplant) vs… | 5 | 5 | 6 |
 | [[attention-kv-architecture-sub-1b]] | The sub-1B attention/KV frontier has three cheap, scale-independent wins that are… | 12 | 10 | 8 |
-| [[continual-pt-lowres-qlora-vs-full-cpt-re]] | For a sub-1B Kazakh CPT the frontier converges on full continued pretraining over… | 16 | 14 | 4 |
-| [[data-efficiency-10b-kazakh-10b-token-pre]] | The frontier question is how to assemble and train on a ~9-10B-token Kazakh corpus… | 8 | 7 | 4 |
+| [[continual-pt-lowres-qlora-vs-full-cpt-re]] | For a sub-1B Kazakh CPT the frontier converges on full continued pretraining over… | 16 | 14 | 5 |
+| [[data-efficiency-10b-kazakh-10b-token-pre]] | The frontier question is how to assemble and train on a ~9-10B-token Kazakh corpus… | 8 | 7 | 5 |
 | [[decoder-to-embedder]] | The topic covers converting causal decoder LMs into text embedders, directly relevant to… | 19 | 16 | 2 |
 | [[deepseek-tech]] | The DeepSeek stack supplies QymyzLM's two efficiency levers, but the slice's own math… | 7 | 7 | 5 |
 | [[does-the-engram-conditional-memory-modul]] | The frontier question is whether Engram-style conditional memory helps at QymyzLM's ≤600M… | 4 | 4 | 4 |
@@ -105,14 +127,21 @@ regenerate with `python scripts/build_vault.py`.
 | [[joint-generative-embedding-head-on-one-6]] | The frontier question is whether ONE model ≤600M active params can carry both a… | 7 | 6 | 1 |
 | [[kaggle-t4x2-compute-vram-budget-for-the]] | The lab has empirically pinned the Kaggle-free-tier CPT envelope for Qwen3-0.6B-Base… | 8 | 1 | 2 |
 | [[kazakh-morphological-segmentation-qualit]] | The established picture: on clean, lab-annotated or synthetic Kazakh data, SUPERVISED… | 8 | 2 | 3 |
-| [[kazakh-tokenizer-fertility-vs-byte-premi]] | The frontier here has largely inverted the intuitive story that a better Kazakh tokenizer… | 6 | 5 | 3 |
-| [[kazakh-turkic-nlp]] | The established fact is that every published Kazakh SOTA at any scale is an ADAPTATION of… | 12 | 10 | 9 |
+| [[kazakh-tokenizer-fertility-vs-byte-premi]] | The frontier here has largely inverted the intuitive story that a better Kazakh tokenizer… | 6 | 5 | 4 |
+| [[kazakh-turkic-nlp]] | The established fact is that every published Kazakh SOTA at any scale is an ADAPTATION of… | 12 | 10 | 17 |
 | [[kv-cache-architecture]] | The frontier here is cross-layer KV sharing on top of GQA/MQA — reusing K/V across layers… | 5 | 3 | 1 |
 | [[llm-alignment-data]] | This topic is anchored by a single node, Qorgau (arxiv:2502.13640, MBZUAI Feb 2025) — the… | 1 | 1 | 0 |
 | [[mla-at-sub-1b-scale]] | The frontier splits cleanly into three evidence classes. | 19 | 13 | 8 |
 | [[mla-upcycling-bespoke-tokenizer]] | The question — can a ≤1B GQA model be upcycled to MLA when it uses a bespoke Kazakh… | 5 | 5 | 3 |
 | [[mla-vs-gqa-convergence-cost]] | The frontier question is whether MLA beats GQA enough to justify it when pretraining a… | 5 | 4 | 3 |
-| [[novelty-check]] | The novelty audit converges on one point: every component QymyzLM plans is established… | 18 | 16 | 15 |
+| [[mteb-upstream-contrib-process]] | — | 13 | 0 | 0 |
+| [[mteb-upstream-kazqad-upstream-status]] | — | 11 | 2 | 0 |
+| [[mteb-upstream-pr-precedents]] | — | 13 | 0 | 0 |
+| [[mteb-upstream-task-api]] | — | 16 | 0 | 0 |
+| [[non-kazakh-turkic-nlp-landscape-embeddin]] | — | 6 | 1 | 2 |
+| [[non-kazakh-turkic-nlp-landscape-prior-ar]] | — | 9 | 3 | 5 |
+| [[non-kazakh-turkic-nlp-landscape-reconcil]] | — | 5 | 4 | 10 |
+| [[novelty-check]] | The novelty audit converges on one point: every component QymyzLM plans is established… | 18 | 16 | 16 |
 | [[novelty-check-has-any-2026-preprint-impl]] | CONFIRMED across the whole 2026 Engram lineage: no preprint keys conditional memory by… | 6 | 6 | 8 |
 | [[parameter-counting-convention-and-iso-si]] | The frontier here is a single load-bearing accounting question for QymyzLM: does a… | 3 | 3 | 4 |
 | [[post-hoc-attachment-of-engram-style-cond]] | The frontier question is whether QymyzLM can bolt a random-init, deterministic-hash… | 6 | 6 | 4 |
@@ -120,9 +149,19 @@ regenerate with `python scripts/build_vault.py`.
 | [[residual-stream-stability-qymyzlm-design]] | This topic maps residual-stream/normalization stability tricks for the from-scratch ~500M… | 12 | 12 | 7 |
 | [[slm-architecture]] | This slice frames sub-1B SLM architecture around two competing KV-efficiency mechanisms. | 2 | 2 | 3 |
 | [[small-lm-training-recipes-qymyzlm-design]] | The recipe frontier for a ≤600M Kazakh SLM is now sharply forked into two costed paths. | 11 | 11 | 6 |
-| [[sota-slm]] | The sub-1B frontier is converged on a handful of architectural facts: DEPTH beats WIDTH… | 17 | 10 | 5 |
+| [[sota-slm]] | The sub-1B frontier is converged on a handful of architectural facts: DEPTH beats WIDTH… | 17 | 10 | 12 |
 | [[sparse-memory-2026-engram-lineage-beyond]] | The Engram/n-gram-memory lineage is a crowded 2026 subfield (Memory Layers, UltraMemV2… | 8 | 8 | 7 |
 | [[tokenizer-agglutinative]] | The frontier for tokenizing agglutinative Kazakh converges on a few CONFIRMED points and… | 11 | 10 | 2 |
-| [[tokenizer-morphology]] | The load-bearing, near-consensus finding is that a better tokenizer does NOT buy… | 16 | 14 | 6 |
-| [[training-recipes]] | The frontier is anchored by one proven Kazakh recipe: Sherkala-8B reached KazMMLU 41.4%… | 16 | 15 | 5 |
-| [[win-bar-protocol-audit]] | The audit resolves how the lab's 32.8% KazMMLU baseline and the Sherkala "ceiling"… | 3 | 2 | 3 |
+| [[tokenizer-morphology]] | The load-bearing, near-consensus finding is that a better tokenizer does NOT buy… | 16 | 14 | 8 |
+| [[training-recipes]] | The frontier is anchored by one proven Kazakh recipe: Sherkala-8B reached KazMMLU 41.4%… | 16 | 15 | 6 |
+| [[turkic-embeddings-retrieval-non-kazakh-t]] | — | 12 | 3 | 8 |
+| [[turkic-kyrgyz-non-kazakh-turkic-nlp-land]] | — | 15 | 9 | 18 |
+| [[turkic-nlp-landscape-cheap-tokenizer-sur]] | — | 2 | 2 | 1 |
+| [[turkic-nlp-landscape-uzbek-monolingual-p]] | — | 7 | 5 | 4 |
+| [[turkic-non-kazakh-nlp-landscape-targeted]] | — | 5 | 1 | 4 |
+| [[turkic-other-langs-non-kazakh-turkic-nlp]] | — | 13 | 11 | 14 |
+| [[turkic-pan-benchmarks-non-kazakh-turkic]] | — | 14 | 9 | 17 |
+| [[turkic-pan-models]] | — | 13 | 9 | 17 |
+| [[turkic-turkish]] | — | 11 | 9 | 11 |
+| [[turkic-uzbek-non-kazakh-turkic-nlp-lands]] | — | 15 | 3 | 19 |
+| [[win-bar-protocol-audit]] | The audit resolves how the lab's 32.8% KazMMLU baseline and the Sherkala "ceiling"… | 3 | 2 | 4 |

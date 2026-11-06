@@ -1,0 +1,416 @@
+{
+ "mission": "mteb upstream contribution recon for KazQAD tasks PR (2026-07-04)",
+ "research": [
+  {
+   "area": "mteb-upstream/contrib-process",
+   "findings": [
+    {
+     "claim": "Adding a task/dataset to mteb requires 4 steps: implement a task subclass, fill out TaskMetadata, calculate descriptive statistics, submit a PR.",
+     "source": "https://raw.githubusercontent.com/embeddings-benchmark/mteb/main/docs/contributing/adding_a_dataset.md",
+     "quote": "To add a new task or dataset to MTEB, you need to do four things:\n\n1. **Implement a new task**: Implement a task with the desired dataset, by subclassing an abstract task\n2. **Fill out the metadata** describing the task, main scores, languages etc.\n3. **Calculate descriptive statistics**, which is used to detect duplicates, few number of samples or very short documents\n4. **Submit a Pull Request** of the edits to the [MTEB](https://github.com/embeddings-benchmark/mteb/blob/main) repository"
+    },
+    {
+     "claim": "For retrieval tasks, subclass AbsTaskRetrieval; main_score is ndcg_at_10; example uses mteb.abstasks.retrieval.AbsTaskRetrieval and mteb.abstasks.task_metadata.TaskMetadata.",
+     "source": "https://raw.githubusercontent.com/embeddings-benchmark/mteb/main/docs/contributing/adding_a_dataset.md",
+     "quote": "Retrieval, [`AbsTaskRetrieval`][mteb.abstasks.retrieval.AbsTaskRetrieval] | Retrieval tasks include a corpus from which you retrieve from using a query. The goal is to retrieve relevant documents. ... | [ndcg_at_10]"
+    },
+    {
+     "claim": "Retrieval task dataset load_data must produce corpus with `id` + text/title (or image/audio), queries with `id` + text, and qrels as dict[query_id][doc_id]=relevance; class example given is MyRetrievalTask(AbsTaskRetrieval) with dataset={'path': 'mteb/CQADupstackAndroidRetrieval', 'revision': ...}.",
+     "source": "https://raw.githubusercontent.com/embeddings-benchmark/mteb/main/docs/contributing/adding_a_dataset.md",
+     "quote": "# corpus should have `id` and (`text` + `title`)/`image`/`audio` or any combination of these columns ... # queries should have `id` and `text`/`image`/`audio` ... # qrels should be a dictionary `dict[query_id][document_id] = relevance_score`"
+    },
+    {
+     "claim": "All TaskMetadata fields (description, reference, dataset path+revision, type, category, modalities, eval_splits, eval_langs, main_score, date, domains, task_subtypes, license, annotations_creators, dialect, sample_creation, adapted_from, bibtex_citation) must be filled out for the dataset to be included in mteb; can leave None during dev/PR draft and ask reviewers.",
+     "source": "https://raw.githubusercontent.com/embeddings-benchmark/mteb/main/docs/contributing/adding_a_dataset.md",
+     "quote": "To run a task locally you do not necessarily need to fill out all the fields in the `TaskMetadata`, but if you want to include the dataset in `mteb` we require that all fields are filled out. ... If you are making a PR, feel free to leave fields and `None` if you are unsure about how to fill. You can always ask about it during the PR."
+    },
+    {
+     "claim": "File placement: task class goes inside mteb/tasks/ directory and must be imported in that directory's __init__.py.",
+     "source": "https://raw.githubusercontent.com/embeddings-benchmark/mteb/main/docs/contributing/adding_a_dataset.md",
+     "quote": "Once you have your task you can create a pull request (PR) to the main repository. To do so place task inside the [`mteb/tasks`](https://github.com/embeddings-benchmark/mteb/tree/main/mteb/tasks) directory, and make sure to import the task in the `__init__.py` file in the same directory."
+    },
+    {
+     "claim": "Verified current (July 2026) directory layout under mteb/tasks/retrieval/ is per-language lowercase ISO-639-3 codes (ara, dan, deu, ... rus, tur, vie, zho) plus multilingual/; there is currently NO 'kaz' subdirectory, meaning a new Kazakh-only retrieval task would need a new mteb/tasks/retrieval/kaz/ package (mirroring e.g. mteb/tasks/retrieval/rus/).",
+     "source": "https://api.github.com/repos/embeddings-benchmark/mteb/contents/mteb/tasks/retrieval (fetched via gh api, main branch)",
+     "quote": "__init__.py, ara, code, dan, deu, ell, eng, est, fas, fra, hun, jpn, kat, kor, multilingual, nld, nob, pol, rus, slk, spa, swe, tur, vie, zho, zxx"
+    },
+    {
+     "claim": "GitHub code search on the mteb repo main branch confirms KazQAD is NOT currently referenced anywhere in the codebase (no existing Kazakh retrieval task exists as of 2026-07-04) — a KazQAD PR would be a genuinely new addition, not a duplicate.",
+     "source": "gh api 'search/code?q=KazQAD+repo:embeddings-benchmark/mteb'",
+     "quote": "(empty result set — zero items returned)"
+    },
+    {
+     "claim": "'kaz-Cyrl' language code already appears in existing multilingual retrieval tasks (e.g. WebFAQRetrieval), establishing the exact ISO-639-3+script code convention to reuse: kaz-Cyrl.",
+     "source": "https://raw.githubusercontent.com/embeddings-benchmark/mteb/main/mteb/tasks/retrieval/multilingual/web_faq_retrieval.py",
+     "quote": "\"kaz\": [\"kaz-Cyrl\"],"
+    },
+    {
+     "claim": "Concrete monolingual retrieval task naming/metadata template (class name PascalCase + 'Retrieval' suffix, e.g. RiaNewsRetrieval; shared metadata dict pattern for variants like HardNegatives/.v2).",
+     "source": "https://raw.githubusercontent.com/embeddings-benchmark/mteb/main/mteb/tasks/retrieval/rus/ria_news_retrieval.py",
+     "quote": "class RiaNewsRetrieval(AbsTaskRetrieval):\n    ignore_identical_ids = True\n\n    metadata = TaskMetadata(\n        name=\"RiaNewsRetrieval\",\n        dataset={\n            \"path\": \"ai-forever/ria-news-retrieval\",\n            \"revision\": \"82374b0bbacda6114f39ff9c5b925fa1512ca5d7\",\n        }, ..."
+    },
+    {
+     "claim": "Package __init__.py registration pattern: explicit re-export of every class name via __all__ list, then the parent mteb/tasks/retrieval/__init__.py does `from .rus import *` etc, and mteb/tasks/__init__.py does `from .retrieval import *`.",
+     "source": "https://raw.githubusercontent.com/embeddings-benchmark/mteb/main/mteb/tasks/retrieval/rus/__init__.py and mteb/tasks/retrieval/__init__.py and mteb/tasks/__init__.py",
+     "quote": "from .ria_news_retrieval import (\n    RiaNewsRetrieval,\n    RiaNewsRetrievalHardNegatives,\n    RiaNewsRetrievalHardNegativesV2,\n)\nfrom .ru_bq_retrieval import RuBQRetrieval\n\n__all__ = [...] ; retrieval/__init__.py: 'from .rus import *' ; tasks/__init__.py line 13: 'from .retrieval import *'"
+    },
+    {
+     "claim": "Before opening the PR, must run task.calculate_descriptive_statistics() to detect duplicates/small-sample/short-document issues.",
+     "source": "https://raw.githubusercontent.com/embeddings-benchmark/mteb/main/docs/contributing/adding_a_dataset.md",
+     "quote": "Before creating a pull request, it is important to calculate some descriptive statistics about the dataset. ... To calculate the descriptive statistics, you can run [`task.calculate_descriptive_statistics()`][mteb.AbsTask.calculate_descriptive_statistics]. By default, this method caches the results ... To recalculate ... use `overwrite_results=True`."
+    },
+    {
+     "claim": "Exact PR checklist (verbatim, to paste into PR description).",
+     "source": "https://raw.githubusercontent.com/embeddings-benchmark/mteb/main/docs/contributing/adding_a_dataset.md",
+     "quote": "- [ ] I have outlined why this dataset is filling an existing gap in `mteb`\n- [ ] I have tested that the dataset runs with the `mteb` package.\n- [ ] I have run the following models on the task (adding the results to the pr). These can be run using the `mteb run -m {model_name} -t {task_name}` command.\n  - [ ] `mteb/baseline-random encoder`\n  - [ ] `intfloat/multilingual-e5-small` or another small model\n- [ ] I have checked that the performance is neither trivial (close to perfect scores) nor random.\n- [ ] I have considered the size of the dataset and reduced it if it is too big (e.g. 2048 examples for binary classification)\n- [ ] I reproduced scores from the original paper (if applicable) and added them to the PR description for reference."
+    },
+    {
+     "claim": "Test commands to verify a new task: python `mteb.evaluate(model, task)` or CLI `mteb run -m mteb/baseline-random encoder -t {name of your task}`.",
+     "source": "https://raw.githubusercontent.com/embeddings-benchmark/mteb/main/docs/contributing/adding_a_dataset.md",
+     "quote": "=== \"CLI\"\n    ```bash\n    mteb run -m mteb/baseline-random encoder -t {name of your task}\n    ```"
+    },
+    {
+     "claim": "The literal PR template on GitHub points contributors to the dataset checklist docs page (not the checklist text embedded in the template itself).",
+     "source": "https://raw.githubusercontent.com/embeddings-benchmark/mteb/main/.github/pull_request_template.md",
+     "quote": "If you add a model or a dataset, please add the corresponding checklist:\n\n* [dataset checklist](https://embeddings-benchmark.github.io/mteb/contributing/adding_a_dataset/#submit-a-pull-request)\n* [model checklist](https://embeddings-benchmark.github.io/mteb/contributing/adding_a_model/#submitting-your-model-as-a-pr)"
+    },
+    {
+     "claim": "Repo review/label routing: reviewed by 'one of the organizers or contributors'; a GitHub label 'new dataset' exists and matches the issue-template label for pre-PR dataset requests.",
+     "source": "https://raw.githubusercontent.com/embeddings-benchmark/mteb/main/docs/contributing/adding_a_dataset.md ; gh api repos/embeddings-benchmark/mteb/labels ; .github/ISSUE_TEMPLATE/new_dataset.yaml",
+     "quote": "Once submitted the PR will be reviewed by one of the organizers or contributors who might ask you to change things. Once the PR is approved the dataset will be added into the main repository. [label list includes] 'new dataset' [issue template] name: 🗃 New dataset ... labels: [\"new dataset\"]"
+    },
+    {
+     "claim": "Optional pre-PR path: open a 'New dataset' GitHub issue requiring HF dataset link, optional Arxiv link, and a description — before or instead of directly opening a PR.",
+     "source": "https://raw.githubusercontent.com/embeddings-benchmark/mteb/main/.github/ISSUE_TEMPLATE/new_dataset.yaml",
+     "quote": "name: 🗃 New dataset\ndescription: Create a request for a new dataset to be added to MTEB\ntitle: \"Add dataset: {dataset_name}\"\nlabels: [\"new dataset\"]\nbody:\n  - type: input\n    attributes:\n      label: dataset link on Hugging dataset\n      description: Please provide a link to the dataset, ideally to Hugging Face.\n    validations:\n      required: true\n  - type: input\n    attributes:\n      label: Arxiv link"
+    },
+    {
+     "claim": "CI runs a dedicated dataset-loading workflow keyed off changes to mteb/tasks/**.py, executed via `make dataset-load-test-pr` (or `make dataset-load-test` on push to main), which resolves to a pytest run restricted to the `test_datasets` marker; the base `make test` used for general PR CI explicitly EXCLUDES that marker.",
+     "source": "https://raw.githubusercontent.com/embeddings-benchmark/mteb/main/.github/workflows/dataset_loading.yml and https://raw.githubusercontent.com/embeddings-benchmark/mteb/main/Makefile",
+     "quote": "on:\n  push:\n    branches: [main]\n  pull_request:\n    paths:\n      - \"mteb/tasks/**.py\" ... run: |\n        if [ \"${{ github.event_name }}\" == \"pull_request\" ]; then\n          make dataset-load-test-pr BASE_BRANCH=${{ github.event.pull_request.base.ref }}\n        else\n          make dataset-load-test\n        fi\n\n[Makefile] test:\n\tuv run --no-sync --group test pytest -n auto -m \"not (test_datasets or leaderboard_stability or test_reference_models)\"\n\ndataset-load-test:\n\tuv run --no-sync --group test pytest -m test_datasets\n\ndataset-load-test-pr:\n\teval \"$$(uv run --no-sync python -m scripts.extract_datasets $(BASE_BRANCH))\" && uv run --no-sync --group test pytest -m test_datasets"
+    },
+    {
+     "claim": "Required local dev commands before a PR: `make install` (uv sync --extra image --group dev), `make lint` (ruff format/check, typos), `make typecheck` (mypy mteb), `make test` (pytest -n auto excluding test_datasets/leaderboard_stability/test_reference_models); combined shortcut is `make pr` = lint + test.",
+     "source": "https://raw.githubusercontent.com/embeddings-benchmark/mteb/main/Makefile and https://raw.githubusercontent.com/embeddings-benchmark/mteb/main/docs/CONTRIBUTING.md",
+     "quote": "install:\n\tuv sync --extra image --group dev\nlint:\n\tuv run --no-sync ruff format .\n\tuv run --no-sync ruff check . --fix --exit-non-zero-on-fix\n\tuv run --no-sync typos\ntypecheck:\n\tuv run --no-sync mypy mteb\npr:\n\tmake lint\n\tmake test"
+    },
+    {
+     "claim": "Commit message convention (not strictly enforced but recommended): prefix `dataset:` for new datasets/benchmarks to trigger semantic-release version bump; `fix:` patch, `feat:` minor, `breaking:` major, `model:` for new models; `docs:`/`chore:`/`refactor:` do not bump version and following this isn't required if you don't intend to trigger a release.",
+     "source": "https://raw.githubusercontent.com/embeddings-benchmark/mteb/main/docs/CONTRIBUTING.md",
+     "quote": "For maintainers (and contributors), this means that commits with the following prefixes will automatically trigger a version bump: - `fix:` for patches - `model:` for new models - `dataset:` for new datasets and benchmarks - `feat:` for minor versions - `breaking:` for major versions ... Other prefixes will not trigger a version bump ... you're not required to follow this convention when contributing to MTEB."
+    },
+    {
+     "claim": "Uploading the dataset to a specific HF org is NOT strictly mandated to open the PR — `dataset.path` can point to any existing HF dataset repo (e.g. third-party org) — but a `push_dataset_to_hub(repo_name)` helper exists and the convention shown in docs uses the `mteb/` org (e.g. `mteb/poem_sentiment`, `mteb/CQADupstackAndroidRetrieval`) after processing, which is recommended so dataset_transform preprocessing doesn't have to be re-run.",
+     "source": "https://raw.githubusercontent.com/embeddings-benchmark/mteb/main/docs/contributing/adding_a_dataset.md",
+     "quote": "Once a dataset is added to the repository, it can be pushed to the hub using the [`push_dataset_to_hub`][mteb.AbsTask.push_dataset_to_hub] method. ... You can then update class to utilize the new dataset on the hub and remove the `dataset_transform` method. ... task = MyTask()\nrepo_name = f\"myorg/{task.metadata.name}\"\ntask.push_dataset_to_hub(repo_name)"
+    },
+    {
+     "claim": "[UNVERIFIED] Whether the mteb maintainers REQUIRE the final dataset copy to live under the `mteb/` HF org (vs. contributor's own org) before merging a retrieval-task PR — the doc shows `mteb/` as the example prefix but does not state it as a hard requirement, and no separate policy page was found confirming/denying this.",
+     "source": "https://raw.githubusercontent.com/embeddings-benchmark/mteb/main/docs/contributing/adding_a_dataset.md",
+     "unverified": true
+    },
+    {
+     "claim": "No explicit points-of-contact/CODEOWNERS file exists in the repo root or .github/ (404 on lookup); review is instead informally 'one of the organizers or contributors', and the discussion forum for questions is the GitHub Discussions tab.",
+     "source": "gh api repos/embeddings-benchmark/mteb/contents/.github/CODEOWNERS (404) ; https://raw.githubusercontent.com/embeddings-benchmark/mteb/main/docs/contributing/adding_a_dataset.md",
+     "quote": "if you have any questions regarding this process feel free to open a discussion [thread](https://github.com/embeddings-benchmark/mteb/discussions)."
+    },
+    {
+     "claim": "Repository labels relevant to routing a dataset PR/issue: 'new dataset', 'evaluation request', 'new benchmark', 'new model', 'ready for implementation', 'needs discussion', 'more information needed', 'priority::high/medium/low'.",
+     "source": "gh api repos/embeddings-benchmark/mteb/labels",
+     "quote": "audio, bug, Decision, documentation, enhancement, evaluation request, good first issue, help wanted, image, leaderboard, more information needed, needs discussion, new benchmark, new dataset, new model, priority::high, priority::low, priority::medium, ready for implementation, repro, reranking, research project, results, stale, video, WIP, wontfix"
+    }
+   ],
+   "recommendations": [],
+   "open_questions": [
+    "Does mteb require the final dataset artifact to be re-hosted under the `mteb/` HF org (via push_dataset_to_hub) before merge, or is pointing `dataset.path` at a third-party/author org acceptable for retrieval tasks specifically? Docs show `mteb/` as convention but do not state a hard rule — ask in a GitHub Discussion thread or in the PR itself before doing large re-upload work.",
+    "For a new Kazakh-only retrieval task (not multilingual), confirm whether it should live in a brand-new `mteb/tasks/retrieval/kaz/` package (mirroring `rus/`, `tur/` etc.) or whether maintainers would prefer folding it into `mteb/tasks/retrieval/multilingual/` if the underlying corpus (e.g. KazQAD) has cross-lingual splits — this determines file layout and `__init__.py` edits needed.",
+    "Exact allowed enum values for `TaskMetadata` fields like `domains`, `task_subtypes`, `license`, `annotations_creators`, `sample_creation` were not fetched from `mteb/abstasks/task_metadata.py` or `docs/api/task.md` in this pass — pull the source file directly to get the closed vocabulary before filling metadata, since the doc only shows examples, not the enum lists.",
+    "Whether `scripts/extract_datasets.py` (used in `make dataset-load-test-pr`) requires the task file path to follow the exact per-language directory pattern to be auto-detected as changed/new — not confirmed by reading that script's source in this pass.",
+    "Whether opening the 'New dataset' issue first is a prerequisite/expected step before the PR, or purely optional/parallel — the docs describe the PR workflow directly and treat the issue template as a separate lightweight request channel; no explicit sequencing rule was found.",
+    "Confirm current KazQAD licensing terms (needed for the `license` TaskMetadata field) — not covered by this mteb-process recon, needs separate lookup of the KazQAD dataset/paper.",
+    "Whether reviewers expect the required baseline scores (`mteb/baseline-random-encoder` and a small multilingual model such as `intfloat/multilingual-e5-small`) to be posted as raw JSON/table in the PR description or attached as files — the checklist just says 'adding the results to the pr' without a specified format."
+   ]
+  },
+  {
+   "area": "mteb-upstream/task-api",
+   "findings": [
+    {
+     "claim": "Local repo recon was done against a full clone of embeddings-benchmark/mteb already present at /tmp/.../scratchpad/mteb-repo, whose HEAD is the git tag `2.16.3` (commit 6b21b5ab5d7d742d55591ac3a1217e2f98a5b34e, dated 2026-07-03). This is also the latest version on PyPI as of 2026-07-04.",
+     "quote": "HEAD -> main, tag: 2.16.3, origin/main, origin/HEAD ... pypi latest: 2.16.3",
+     "source": "local clone `git log -1`; https://pypi.org/pypi/mteb/json"
+    },
+    {
+     "claim": "GitHub main branch tip (2026-07-03T19:17:01Z, commit 9d21470a, 'fix por benchmark (#4844)') is exactly ONE commit ahead of the 2.16.3 tag, and that commit only touches Dockerfile, README.md, a leaderboard workflow file, benchmarks.py, and a new model file (sionic_models.py) — it does NOT touch abstasks/, task_metadata.py, retrieval.py, or any task files. So for task-API purposes, mteb 2.16.3 == current main (no API drift to account for).",
+     "quote": ".github/workflows/leaderboard_refresh.yaml | 21 +++---\nDockerfile | 80 ++++++++++++++--------\nREADME.md | 2 +-\nmteb/benchmarks/benchmarks/benchmarks.py | 2 +-\nmteb/models/model_implementations/sionic_models.py | 34 +++++++++",
+     "source": "https://api.github.com/repos/embeddings-benchmark/mteb/commits/main ; `git diff 6b21b5a origin/main --stat`"
+    },
+    {
+     "claim": "mteb went through a BREAKING v2.0.0 release (merged MIEB into v2) around 2025-10-20; this is the boundary between the 'old' AbsTask API (relevant to older mteb versions/training-data knowledge) and the current one. Anyone reasoning from pre-2025 training data about mteb's task API is very likely stale.",
+     "quote": "c07c289b 2025-10-20T09:22:50Z BREAKING: v2.0.0 (#1433) * [v2] Merge `MIEB` into v2 (#1973) * Update tasks ta...",
+     "source": "https://api.github.com/repos/embeddings-benchmark/mteb/commits?path=mteb/abstasks/TaskMetadata.py"
+    },
+    {
+     "claim": "There is no separate, non-deprecated `AbsTaskReranking` base class anymore. All modern reranking tasks (and all modern retrieval tasks) subclass `AbsTaskRetrieval` directly; `type=\"Reranking\"` in TaskMetadata is what distinguishes them, not the Python base class.",
+     "quote": "class RuBQReranking(AbsTaskRetrieval):\n    metadata = TaskMetadata(\n        name=\"RuBQReranking\", ... type=\"Reranking\", ... main_score=\"map_at_1000\", ...)",
+     "source": "mteb/tasks/reranking/rus/ru_bq_reranking.py in embeddings-benchmark/mteb@2.16.3 (https://github.com/embeddings-benchmark/mteb/blob/2.16.3/mteb/tasks/reranking/rus/ru_bq_reranking.py)"
+    },
+    {
+     "claim": "The old `AbsTaskReranking` class still exists at mteb/abstasks/text/reranking.py, but is decorated `@deprecated` and only kept for one legacy dataset-format code path (`transform_old_dataset_format` for tasks listed in `OLD_FORMAT_RERANKING_TASKS`, currently an empty list). New PRs should not use it.",
+     "quote": "@deprecated(\n    \"This class is deprecated and will be removed in future versions. Please use the updated retrieval tasks instead. You can add your task name to mteb.abstasks.text.reranking.OLD_FORMAT_RERANKING_TASKS to load it in new format...\"\n)\nclass AbsTaskReranking(AbsTaskRetrieval):",
+     "source": "mteb/abstasks/text/reranking.py in embeddings-benchmark/mteb@2.16.3 (https://github.com/embeddings-benchmark/mteb/blob/2.16.3/mteb/abstasks/text/reranking.py)"
+    },
+    {
+     "claim": "`AbsTaskRetrieval` (mteb/abstasks/retrieval.py) is a subclass of the generic `AbsTask` and defines class attributes ignore_identical_ids, abstask_prompt, k_values=(1,3,5,10,20,100,1000), skip_first_result, plus load_data(), evaluate(), convert_to_reranking(), push_dataset_to_hub()-adjacent helpers, and a v1->v2 dataset-format converter (convert_v1_dataset_format_to_v2) for backward compat with tasks still using the old self.queries/self.corpus/self.relevant_docs attributes.",
+     "quote": "class AbsTaskRetrieval(AbsTask):\n    ignore_identical_ids: bool = False\n    abstask_prompt = \"Retrieve text based on user query.\"\n    k_values: Sequence[int] = (1, 3, 5, 10, 20, 100, 1000)\n    _top_k: int = max(k_values)\n    dataset: dict[str, dict[str, RetrievalSplitData]]\n    _support_cross_encoder: bool = True\n    _support_search: bool = True\n    _previous_results_model_meta: dict[str, Any] | None = None\n    skip_first_result: bool = False",
+     "source": "mteb/abstasks/retrieval.py:83-108 in embeddings-benchmark/mteb@2.16.3 (https://github.com/embeddings-benchmark/mteb/blob/2.16.3/mteb/abstasks/retrieval.py)"
+    },
+    {
+     "claim": "`AbsTaskRetrieval.load_data()` reads `self.metadata.dataset['path']`, `['revision']`, and optional `.get('trust_remote_code', False)`, then for each eval split (and each hf_subset if multilingual) instantiates `RetrievalDatasetLoader(hf_repo=..., revision=..., trust_remote_code=..., split=..., config=hf_subset).load(num_proc=...)`, storing results in `self.dataset[hf_subset][split]` as a `RetrievalSplitData`. Finally it calls `self.dataset_transform()` and sets `self.data_loaded = True`.",
+     "quote": "def load_data(self, num_proc=None, *, timer=None, **kwargs) -> None:\n    ...\n    self.dataset = {}\n    dataset_path = self.metadata.dataset[\"path\"]\n    eval_splits = self.eval_splits\n    trust_remote_code = self.metadata.dataset.get(\"trust_remote_code\", False)\n    revision = self.metadata.dataset[\"revision\"]\n    def _process_data(split, hf_subset=\"default\"):\n        ...\n        self.dataset[hf_subset][split] = RetrievalDatasetLoader(hf_repo=dataset_path, revision=revision, trust_remote_code=trust_remote_code, split=split, config=hf_subset).load(num_proc=num_proc)",
+     "source": "mteb/abstasks/retrieval.py:228-277 in embeddings-benchmark/mteb@2.16.3 (https://github.com/embeddings-benchmark/mteb/blob/2.16.3/mteb/abstasks/retrieval.py)"
+    },
+    {
+     "claim": "`RetrievalDatasetLoader` expects the HF dataset repo to expose specific HF 'config' names it auto-discovers via get_dataset_config_names: `{subset}-corpus` (or plain `corpus` for non-multilingual), `{subset}-queries` (or `queries`), a qrels config (`qrels` if not subset-specific), and OPTIONALLY `{subset}-top_ranked` (or plain `top_ranked`) which, if present, is loaded and used to populate the RetrievalSplitData's `top_ranked` field for reranking-style evaluation.",
+     "quote": "top_ranked_config = (\n    f\"{self.config}-top_ranked\" if self.config is not None else \"top_ranked\"\n)\nif top_ranked_config in self.dataset_configs:\n    top_ranked = self._load_top_ranked(num_proc)\n...\nconfig = f\"{self.config}-corpus\" if self.config is not None else \"corpus\"\n...\nconfig = f\"{self.config}-queries\" if self.config is not None else \"queries\"",
+     "source": "mteb/abstasks/retrieval_dataset_loaders.py:79-249 in embeddings-benchmark/mteb@2.16.3 (https://github.com/embeddings-benchmark/mteb/blob/2.16.3/mteb/abstasks/retrieval_dataset_loaders.py)"
+    },
+    {
+     "claim": "`TaskMetadata` is a Pydantic `BaseModel` with `model_config = ConfigDict(extra=\"forbid\")` (unknown kwargs raise). The genuinely REQUIRED fields (no default value) are: `dataset` (MetadataDatasetDict), `name`, `description`, `type` (TaskType literal), `eval_langs` (Languages), `main_score`. All other fields have defaults: `prompt=None`, `modalities=[\"text\"]`, `category=None`, `reference=None`, `eval_splits=[\"test\"]`, `date=None`, `domains=None`, `task_subtypes=None`, `license=None`, `annotations_creators=None`, `dialect=None`, `sample_creation=None`, `bibtex_citation=None`, `adapted_from=None`, `is_public=True`, `contributed_by=None`, `superseded_by=None`, `is_beta=False`.",
+     "quote": "model_config = ConfigDict(extra=\"forbid\")\ndataset: MetadataDatasetDict\nname: str\ndescription: str\nprompt: str | PromptDict | None = None\ntype: TaskType\nmodalities: list[Modalities] = [\"text\"]\ncategory: TaskCategory | None = None\nreference: StrURL | None = None\neval_splits: list[str] = [\"test\"]\neval_langs: Languages\nmain_score: str\ndate: tuple[StrDate, StrDate] | None = None\ndomains: list[TaskDomain] | None = None\ntask_subtypes: list[TaskSubtype] | None = None\nlicense: Licenses | StrURL | None = None\nannotations_creators: AnnotatorType | None = None\ndialect: list[str] | None = None\nsample_creation: SampleCreationMethod | None = None\nbibtex_citation: str | None = None\nadapted_from: Sequence[str] | None = None\nis_public: bool = True\ncontributed_by: str | None = None\nsuperseded_by: str | None = None\nis_beta: bool = False",
+     "source": "mteb/abstasks/task_metadata.py:462-492 in embeddings-benchmark/mteb@2.16.3 (https://github.com/embeddings-benchmark/mteb/blob/2.16.3/mteb/abstasks/task_metadata.py)"
+    },
+    {
+     "claim": "There is NO `descriptive_stats` (or `n_samples`) field passed into `TaskMetadata(...)` at all in current mteb — this is a change from older mteb versions. Instead `descriptive_stats` and `n_samples` are read-only `@property`s that lazily load a separate auto-generated JSON file at `mteb/descriptive_stats/{TaskType}/{TaskName}.json` (or under an `Image/` subfolder for MIEB task types). The JSON is produced by calling `task.calculate_descriptive_statistics()` on an instantiated, loaded task, which writes stats per split (num_samples, character-length stats for docs/queries, relevant_docs_statistics, top_ranked_statistics, num_documents, num_queries).",
+     "quote": "@property\ndef descriptive_stats(self) -> dict[str, DescriptiveStatistics] | None:\n    if self.descriptive_stat_path.exists():\n        with self.descriptive_stat_path.open(\"r\") as f:\n            js = cast(...); return js\n    return None\n\n@property\ndef descriptive_stat_path(self) -> Path:\n    descriptive_stat_base_dir = Path(__file__).parent.parent / \"descriptive_stats\"\n    if self.type in MIEB_TASK_TYPE:\n        descriptive_stat_base_dir = descriptive_stat_base_dir / \"Image\"\n    task_type_dir = descriptive_stat_base_dir / str(self.type)\n    return task_type_dir / f\"{self.name}.json\"",
+     "source": "mteb/abstasks/task_metadata.py:609-625 in embeddings-benchmark/mteb@2.16.3 (https://github.com/embeddings-benchmark/mteb/blob/2.16.3/mteb/abstasks/task_metadata.py); example file mteb/descriptive_stats/Retrieval/RuBQRetrieval.json"
+    },
+    {
+     "claim": "Contributor docs confirm the descriptive-stats workflow above and give the exact PR checklist: implement task -> fill metadata -> `task.calculate_descriptive_statistics()` -> import the class in the directory's `__init__.py` -> submit PR. It explicitly says all TaskMetadata fields must be filled for a task to be merged (fields may be None only in draft PRs, to be resolved during review).",
+     "quote": "1. **Implement a new task** ... 2. **Fill out the metadata** ... 3. **Calculate descriptive statistics**, which is used to detect duplicates, few number of samples or very short documents 4. **Submit a Pull Request** ... To run a task locally you do not necessarily need to fill out all the fields in the `TaskMetadata`, but if you want to include the dataset in `mteb` we require that all fields are filled out. ... place task inside the `mteb/tasks` directory, and make sure to import the task in the `__init__.py` file in the same directory. ... To calculate the descriptive statistics, you can run `task.calculate_descriptive_statistics()`.",
+     "source": "docs/contributing/adding_a_dataset.md in embeddings-benchmark/mteb@2.16.3 (https://github.com/embeddings-benchmark/mteb/blob/2.16.3/docs/contributing/adding_a_dataset.md)"
+    },
+    {
+     "claim": "The contributing doc's PR checklist requires running two reference models on the new task and pasting the scores into the PR description: the mteb random baseline and a small multilingual model.",
+     "quote": "- [ ] I have run the following models on the task (adding the results to the pr). These can be run using the `mteb run -m {model_name} -t {task_name}` command.\n  - [ ] `mteb/baseline-random-encoder`\n  - [ ] `intfloat/multilingual-e5-small` or another small model\n- [ ] I have checked that the performance is neither trivial (close to perfect scores) nor random.\n- [ ] I have considered the size of the dataset and reduced it if it is too big (e.g. 2048 examples for binary classification)\n- [ ] I reproduced scores from the original paper (if applicable) and added them to the PR description for reference.",
+     "source": "docs/contributing/adding_a_dataset.md in embeddings-benchmark/mteb@2.16.3 (https://github.com/embeddings-benchmark/mteb/blob/2.16.3/docs/contributing/adding_a_dataset.md)"
+    },
+    {
+     "claim": "A full, verbatim, current (2.16.3/main) example of a real retrieval task class for a Cyrillic-script Slavic language (structurally closest analog to a Kazakh task): RuBQRetrieval. This is the exact code pattern a Kazakh retrieval task PR should follow.",
+     "quote": "from mteb.abstasks.retrieval import AbsTaskRetrieval\nfrom mteb.abstasks.task_metadata import TaskMetadata\n\n\nclass RuBQRetrieval(AbsTaskRetrieval):\n    ignore_identical_ids = True\n\n    metadata = TaskMetadata(\n        name=\"RuBQRetrieval\",\n        dataset={\n            \"path\": \"ai-forever/rubq-retrieval\",\n            \"revision\": \"e19b6ffa60b3bc248e0b41f4cc37c26a55c2a67b\",\n        },\n        description=\"Paragraph retrieval based on RuBQ 2.0. Retrieve paragraphs from Wikipedia that answer the question.\",\n        reference=\"https://openreview.net/pdf?id=P5UQFFoQ4PJ\",\n        type=\"Retrieval\",\n        category=\"t2t\",\n        modalities=[\"text\"],\n        eval_splits=[\"test\"],\n        eval_langs=[\"rus-Cyrl\"],\n        main_score=\"ndcg_at_10\",\n        date=(\"2001-01-01\", \"2021-01-01\"),\n        domains=[\"Encyclopaedic\", \"Written\"],\n        task_subtypes=[\"Question answering\"],\n        license=\"cc-by-sa-4.0\",\n        annotations_creators=\"human-annotated\",\n        dialect=[],\n        sample_creation=\"created\",\n        bibtex_citation=r\"\"\"\n@inproceedings{RuBQ2021,\n  author = {Ivan Rybin and Vladislav Korablinov and Pavel Efimov and Pavel Braslavski},\n  booktitle = {ESWC},\n  pages = {532--547},\n  title = {RuBQ 2.0: An Innovated Russian Question Answering Dataset},\n  year = {2021},\n}\n\"\"\",\n        prompt={\n            \"query\": \"Given a question, retrieve Wikipedia passages that answer the question\"\n        },\n    )",
+     "source": "mteb/tasks/retrieval/rus/ru_bq_retrieval.py in embeddings-benchmark/mteb@2.16.3 (https://github.com/embeddings-benchmark/mteb/blob/2.16.3/mteb/tasks/retrieval/rus/ru_bq_retrieval.py)"
+    },
+    {
+     "claim": "Retrieval tasks live at mteb/tasks/retrieval/<iso639-3-lang-or-'multilingual'>/*.py (e.g. eng/, rus/, ara/, code/, dan/, deu/...), and reranking tasks live in the sibling tree mteb/tasks/reranking/<lang>/*.py, but reranking task Python classes still subclass AbsTaskRetrieval (see finding above) — the directory split (retrieval/ vs reranking/) is purely organizational, not a base-class split. There is currently NO Kazakh (kaz) directory or task file anywhere under mteb/tasks/ (retrieval, reranking, or otherwise) — a Kazakh contribution would be a net-new `mteb/tasks/retrieval/kaz/` (and optionally `mteb/tasks/reranking/kaz/`) directory.",
+     "quote": "mteb/tasks/reranking/rus/ru_bq_reranking.py:5:class RuBQReranking(AbsTaskRetrieval):\n... (repo tree listing of mteb/tasks/retrieval/ shows eng/ rus/ ara/ code/ dan/ deu/ ell/ ... no kaz/ directory found by `find mteb/tasks -iname \"*kaz*\"` -> empty result)",
+     "source": "directory listing of embeddings-benchmark/mteb@2.16.3 mteb/tasks/retrieval/ and mteb/tasks/reranking/ (https://github.com/embeddings-benchmark/mteb/tree/2.16.3/mteb/tasks/retrieval and https://github.com/embeddings-benchmark/mteb/tree/2.16.3/mteb/tasks/reranking); local `find` returned no kaz-named files"
+    },
+    {
+     "claim": "Kazakh is already a recognized language in mteb's internal language registry (used to validate `eval_langs` BCP-47-ish codes like `kaz-Cyrl`), so a Kazakh task's `eval_langs=[\"kaz-Cyrl\"]` will pass `check_language_code` validation without needing any registry changes.",
+     "quote": "iso_639_3_to_language.json: 'kaz' -> 'Kazakh' (present=True)\niso_639_3_to_default_script.json: 'kaz' -> 'Cyrl' (present=True)",
+     "source": "mteb/languages/iso_639_3_to_language.json and mteb/languages/iso_639_3_to_default_script.json in embeddings-benchmark/mteb@2.16.3 (https://github.com/embeddings-benchmark/mteb/tree/2.16.3/mteb/languages)"
+    },
+    {
+     "claim": "The `TaskType` literal (required field `type=`) includes both `\"Retrieval\"` and `\"Reranking\"` as first-class values among a much larger unified list spanning text/image/audio/video task types (MIEB/MAEB/MVEB additions merged in the v2.0.0 breaking release).",
+     "quote": "_TASK_TYPE = (\n    (\n        \"BitextMining\", \"Classification\", \"MultilabelClassification\", \"Clustering\", \"PairClassification\", \"Regression\", \"Reranking\", \"Retrieval\", \"STS\", \"Summarization\", \"InstructionRetrieval\", \"InstructionReranking\",\n    ) + MIEB_TASK_TYPE + MAEB_TASK_TYPE + MVEB_TASK_TYPE\n)\nTaskType = Literal[_TASK_TYPE]",
+     "source": "mteb/abstasks/task_metadata.py:220-240 in embeddings-benchmark/mteb@2.16.3 (https://github.com/embeddings-benchmark/mteb/blob/2.16.3/mteb/abstasks/task_metadata.py)"
+    },
+    {
+     "claim": "A retrieval task can be converted, at runtime, into a reranking-style evaluation from a previous model's saved predictions via `AbsTaskRetrieval.convert_to_reranking(top_ranked_path, top_k=10)`, which loads a JSON of a prior run's per-query scored candidates and truncates to top_k per query — an alternative to pre-baking a static top_ranked column into the HF dataset.",
+     "quote": "def convert_to_reranking(self, top_ranked_path: str | Path, top_k: int = 10) -> Self:\n    \"\"\"Converts a reranking task to re-ranking by loading predictions from previous model run where the `prediction_folder` was specified. ...\"\"\"\n    ...\n    for subset in self.dataset:\n        for split in self.dataset[subset]:\n            top_ranked: RetrievalOutputType = previous_results[subset][split]\n            ...\n            self.dataset[subset][split][\"top_ranked\"] = top_k_sorted\n    return self",
+     "source": "mteb/abstasks/retrieval.py:690-739 in embeddings-benchmark/mteb@2.16.3 (https://github.com/embeddings-benchmark/mteb/blob/2.16.3/mteb/abstasks/retrieval.py)"
+    }
+   ],
+   "recommendations": [],
+   "open_questions": [
+    "Which exact HF dataset repo/format will host the Kazakh retrieval corpus (KazQAD)? It must be reshaped into mteb's expected HF config layout ('{subset-}corpus', '{subset-}queries', 'qrels' or '{subset-}qrels', optional '{subset-}top_ranked') before AbsTaskRetrieval.load_data() will work — this was not verified against the actual KazQAD/qymyzlm evallab dataset structure in this pass (no access to kekeront/qymyzlm or its evallab/results/ from this sandbox).",
+    "Whether the PR should add a plain AbsTaskRetrieval task (type='Retrieval') only, a companion Reranking task (type='Reranking', same corpus reshaped with a baked-in top_ranked column, e.g. mirroring RuBQRetrieval/RuBQReranking pairing), or use the dynamic convert_to_reranking() path off a saved prediction file instead of a static HF dataset — not determined by this recon, needs a design decision.",
+    "Exact license, annotations_creators, sample_creation, dialect, date range, and bibtex_citation values for KazQAD (or whichever Kazakh dataset is targeted) — these are required TaskMetadata fields per mteb's 'must be fully filled to merge' policy and were not looked up in this pass (would need the actual KazQAD paper/dataset card).",
+    "Whether mteb's PR review process (per docs/contributing/adding_a_dataset.md checklist) will require running mteb/baseline-random-encoder AND intfloat/multilingual-e5-small on the new Kazakh task and pasting scores into the PR description before merge — this is stated as a checklist requirement and should be budgeted into the PR timeline.",
+    "Whether `mteb run -m ... -t ...` CLI and `mteb.get_task()`/`mteb.evaluate()` Python API (both referenced in the contributing docs) have any additional Kazakh-specific gotchas (e.g. tokenizer/script normalization) — not investigated, would need a live `pip install mteb==2.16.3` + smoke test with a draft Kazakh task class to confirm end-to-end.",
+    "Not yet confirmed whether kk-MTEB (mentioned in project CLAUDE.md as a secondary campaign target) already exists as an upstream mteb 'benchmark' grouping (mteb/benchmarks/benchmarks/benchmarks.py) that a Kazakh task should register into, versus needing a wholly new benchmark definition — this file was seen to have changed in the one commit between 2.16.3 and main tip but its content was not read in this pass."
+   ]
+  },
+  {
+   "area": "mteb-upstream/pr-precedents",
+   "findings": [
+    {
+     "claim": "PR #4710 'dataset: add OBLIQ-Bench retrieval (Tchuindjo et al. 2026)' — added 5 English retrieval subtasks (congress/math/twitter/wildchat/writing). Files touched: mteb/abstasks/retrieval_dataset_loaders.py, 5 new mteb/descriptive_stats/Retrieval/OBLIQBench*.json files, mteb/tasks/retrieval/eng/__init__.py, mteb/tasks/retrieval/eng/obliq_bench_retrieval.py, scripts/data/obliq_bench/create_data.py. 9 files changed, +638/-2. Created 2026-05-21, merged 2026-06-05 (~15 days).",
+     "source": "https://github.com/embeddings-benchmark/mteb/pull/4710",
+     "quote": "638 additions, 2 deletions, 9 changed files; createdAt 2026-05-21T23:13:41Z; mergedAt 2026-06-05T06:21:17Z (gh pr view --json)"
+    },
+    {
+     "claim": "PR #4710 friction: maintainer (Samoed) asked author to reupload the dataset to HF in mteb's canonical format via task.push_dataset_to_hub, to split the 5 domain subsets into separate task classes for per-domain prompt customization, questioned whether qrels.tsv (gold) vs qrels_pool.tsv (pooled judgments) should be used, and required the author to re-run and post full benchmark score JSON in the PR thread before approving.",
+     "source": "https://github.com/embeddings-benchmark/mteb/pull/4710",
+     "quote": "Maybe would be better to reupload in correct format? You can do it with `task.push_dataset_to_hub` ... Maybe would be better to split these subsets into differet classes to be able to customize models prompts ... Currently, the implementation is using qrels.tsv (gold) not qrels_pool.tsv (pooled judgments). Do you expect that to be the case for evals? ... Can you fill results in your table?"
+    },
+    {
+     "claim": "PR #4487 'dataset: Add elastic kb retrieval' (ElasticKBRetrieval) — a PRIVATE/restricted retrieval task for the RTEB private subset. 4 files changed (+172/-0): mteb/descriptive_stats/Retrieval/ElasticKBRetrieval.json, mteb/tasks/retrieval/eng/__init__.py, mteb/tasks/retrieval/eng/elastic_kb_retrieval.py, tests/test_abstasks/test_private_tasks.py. Created 2026-04-23, merged 2026-04-30 (7 days).",
+     "source": "https://github.com/embeddings-benchmark/mteb/pull/4487",
+     "quote": "createdAt 2026-04-23T12:46:09Z, mergedAt 2026-04-30T11:10:54Z, changedFiles 4, additions 172 (gh pr view --json)"
+    },
+    {
+     "claim": "PR #4487 friction/requirements: maintainer required is_public=False in TaskMetadata for private/restricted datasets (this is what made tests fail before the fix), required the raw dataset to be re-hosted under the maintainer-controlled 'mteb-private' HF org rather than the contributor's own space, required a contributed_by field, required README/upload-script/analysis docs to accompany the private dataset for future reference, and asked that raw model result JSONs be submitted separately as a PR to the mteb/results repo rather than embedded in the code PR.",
+     "source": "https://github.com/embeddings-benchmark/mteb/pull/4487",
+     "quote": "Note you need to tag it as \"private\" as well using the \"is_public=False\" int the TaskMetadata (partly the reasons why tests fail) ... I can move this over to mteb private if you can share it with me (e.g. as a private dataset on hf) ... path: \"mteb-private/elastic-kb-retrieval\" ... Can you upload these as a PR on the results repository instead"
+    },
+    {
+     "claim": "Merged ElasticKBRetrieval task metadata sets is_public=False and dataset path 'mteb-private/elastic-kb-retrieval' with a fixed HF revision hash; reference field explicitly annotated '# private set'.",
+     "source": "https://raw.githubusercontent.com/embeddings-benchmark/mteb/main/mteb/tasks/retrieval/eng/elastic_kb_retrieval.py",
+     "quote": "reference=\"https://huggingface.co/blog/rteb\",  # private set\\n        dataset={\\n            \"path\": \"mteb-private/elastic-kb-retrieval\",\\n            \"revision\": \"21bdf1e024bf7c9f46720017559ce2f8c6116507\",\\n        },\\n ... is_public=False,"
+    },
+    {
+     "claim": "PR #4521 'dataset: Added private lex retrieval task' (LexRetrieval.v1, Danish) — is_public=False task, dataset hosted at mteb-private/LexRetrieval. 4 files changed (+74/-0). Created 2026-04-27, merged 2026-04-29 (2 days) — fastest of the sample.",
+     "source": "https://github.com/embeddings-benchmark/mteb/pull/4521",
+     "quote": "createdAt 2026-04-27T08:26:03Z, mergedAt 2026-04-29T16:05:04Z, changedFiles 4, additions 74 (gh pr view --json); merged file mteb/tasks/retrieval/dan/lex_retrieval.py sets dataset path 'mteb-private/LexRetrieval' and is_public=False"
+    },
+    {
+     "claim": "PR #4521 friction: reviewer rejected an unrelated pyproject.toml version bump, required all TaskMetadata fields to be filled, and a Pydantic validation error was surfaced live in review because the `reference` field was a bare HF dataset slug rather than a full URL.",
+     "source": "https://github.com/embeddings-benchmark/mteb/pull/4521",
+     "quote": "You shouldn't change version in pyproject ... Please, fill all values in metadata ... E   reference\\nE     Input should be a valid URL, relative URL without a base [type=url_parsing, input_value='chcaa/lex_articles10k_retrieval_eval_v2', input_type=str]"
+    },
+    {
+     "claim": "PR #3991 'dataset: Add ERESS reranking task' (ecommerce product relevance reranking) — 4 files changed (+88/-0): mteb/abstasks/task_metadata.py, mteb/descriptive_stats/Reranking/ERESSReranking.json, mteb/tasks/reranking/eng/__init__.py, mteb/tasks/reranking/eng/ecommerce_product_relevance_reranking.py. Created 2026-01-25, merged 2026-02-03 (9 days).",
+     "source": "https://github.com/embeddings-benchmark/mteb/pull/3991",
+     "quote": "createdAt 2026-01-25T00:14:11Z, mergedAt 2026-02-03T23:02:13Z, changedFiles 4, additions 88 (gh pr view --json)"
+    },
+    {
+     "claim": "PR #3991 friction: reviewer flagged that title+description text concatenation produced duplicated titles at encoding time, flagged 11,583 empty text samples as a possible data-quality bug, required actual (not placeholder) dataset revision hash and correct collection dates, and twice required the author to reupload the HF dataset after finding formatting/encoding bugs in the contributor's own upload script.",
+     "source": "https://github.com/embeddings-benchmark/mteb/pull/3991",
+     "quote": "your datset would have duplicated title, because during processing title and text will be concated ... 11,583 text samples of your dataset is empty. Is this expected? ... Dataset Reuploaded, Custom transformaton removed ... My bad, removed the bug in my upload script and HF dataset is now formatted"
+    },
+    {
+     "claim": "PR #4226 'dataset: add BrowseComp-Plus' — a retrieval task built on a dataset that is XOR-obfuscated at rest for anti-scraping reasons (analogous to a gating concern). Created 2026-03-11, merged 2026-04-13 (~33 days) — the slowest of the sample, stalled mainly on the maintainer needing compute to run Qwen3-Embedding-0.6B as a required baseline (hit a github-actions stale-bot warning at day 25 for inactivity).",
+     "source": "https://github.com/embeddings-benchmark/mteb/pull/4226",
+     "quote": "Tried to run qwen0.6b and this requires a lot of time. I'll try to find more resources ... This pull request has been automatically marked as stale due to inactivity. ... Took a while to finalize this: https://github.com/embeddings-benchmark/results/pull/480"
+    },
+    {
+     "claim": "On handling of datasets that must not appear as public plaintext (closest documented analogue to a 'gated' HF dataset), maintainer KennethEnevoldsen's stated preference order was: (1) re-upload to a proper mteb-controlled HF repo, (2) if that would expose sensitive content via HF's dataset viewer, make the mteb-controlled re-upload GATED rather than leave the original arrangement — explicitly calling gating 'not ideal, but better' than exposing content — and separately explored disabling the HF datasets-viewer as an alternative to gating. In the event, the maintainer ultimately re-uploaded it as a fully PUBLIC ungated dataset under the official mteb HF org and removed the custom load_data entirely.",
+     "source": "https://github.com/embeddings-benchmark/mteb/pull/4226",
+     "quote": "I think we want to re-upload this to the hub in the proper format to avoid us having to maintain a custom load data function ... Hmm - right and enabling the viewer by reuploading in the proper format will make it so. I would reupload and make it gated (not ideal, but better). Would be great if we could disable the viewer. I will ask @tomaarsen if that is an option. ... [tomaarsen] Yes, it's possible via https://huggingface.co/docs/hub/en/datasets-viewer-configure#disable-the-viewer ... Uploaded the dataset and removed the load_data ... Started an upload here: https://huggingface.co/datasets/mteb/BrowseCompPlusRetrieval"
+    },
+    {
+     "claim": "A separate, still-open issue confirms contributors do sometimes stage a dataset as gated on HF mid-development without it being treated as disqualifying by mteb maintainers — it's simply an interim WIP state expected to be resolved before/at merge.",
+     "source": "https://github.com/embeddings-benchmark/mteb/issues/3871",
+     "quote": "I would like to integrate `KoViDoRe v2` into the mteb. I'm currently adding the finishing touches, so I've temporarily set the dataset as gated for now"
+    },
+    {
+     "claim": "The companion PR for that same dataset (KoViDoRe v2, 4 Korean vision-retrieval tasks) merged in 2 days with only routine implementation feedback (rename columns, push_dataset_to_hub, drop unneeded multilingual flag) and no residual gating discussion — implying the gate had been lifted or was a non-issue by merge time.",
+     "source": "https://github.com/embeddings-benchmark/mteb/pull/3876",
+     "quote": "createdAt 2026-01-07T07:30:58Z, mergedAt 2026-01-09T12:11:26Z, state MERGED (gh pr view --json)"
+    },
+    {
+     "claim": "mteb has a formal, enforced concept of 'private' tasks (is_public=False) distinct from a gated HF repo: an explicit allowlist test fails the CI suite for any is_public=False task whose name is not on a maintainer-curated list, forcing every private/restricted dataset PR to get an explicit maintainer sign-off baked into the test file itself.",
+     "source": "https://raw.githubusercontent.com/embeddings-benchmark/mteb/main/tests/test_abstasks/test_private_tasks.py",
+     "quote": "def test_private_tasks_fail_unless_accepted():\\n    \"\"\"Test that private tasks (is_public=False) fail unless they are in the accepted list.\"\"\"\\n    ...\\n    for task in private_tasks:\\n        assert task.metadata.name in ACCEPTED_PRIVATE_TASKS, (\\n            f\"Private task '{task.metadata.name}' is not in the accepted private tasks list. \"\\n            f\"Either make the task public (is_public=True) or add it to ACCEPTED_PRIVATE_TASKS.\"\\n        )"
+    },
+    {
+     "claim": "mteb's own hub-integration code explicitly imports and handles huggingface_hub's GatedRepoError as an expected condition when checking commits/files on the Hub (logs a warning and returns None rather than crashing), i.e. the library is written to tolerate encountering gated repos gracefully, though this is a defensive fallback, not evidence that gated repos pass the CI dataset-loading test.",
+     "source": "https://raw.githubusercontent.com/embeddings-benchmark/mteb/main/mteb/_hf_integration/hf_hub_utils.py",
+     "quote": "from huggingface_hub.errors import (\\n    EntryNotFoundError,\\n    GatedRepoError,\\n    HFValidationError,\\n    RepositoryNotFoundError,\\n)\\n...\\n    except (GatedRepoError, RepositoryNotFoundError) as e:\\n        logger.warning(f\"Can't get commits of {repo_id}: {e}\")\\n        return None"
+    },
+    {
+     "claim": "mteb runs a dedicated CI job, 'Datasets available on HuggingFace' (.github/workflows/dataset_loading.yml), on every PR that touches mteb/tasks/**.py; it actually calls load_data() for changed/added tasks using an HF_TOKEN secret that only maintainers control. A dataset gated on HF would only load in this CI if the account behind the mteb org's HF_TOKEN has itself accepted that dataset's gate terms on huggingface.co beforehand — a PR author cannot make their own gate-acceptance count for CI.",
+     "source": "https://raw.githubusercontent.com/embeddings-benchmark/mteb/main/.github/workflows/dataset_loading.yml",
+     "quote": "on:\\n  push:\\n    branches: [main]\\n  pull_request:\\n    paths:\\n      - \"mteb/tasks/**.py\"\\n...\\n    - name: Run dataset loading tests\\n      env:\\n        HF_TOKEN: ${{ secrets.HF_TOKEN }}\\n      run: |\\n        if [ \"${{ github.event_name }}\" == \"pull_request\" ]; then\\n          make dataset-load-test-pr BASE_BRANCH=${{ github.event.pull_request.base.ref }}"
+    },
+    {
+     "claim": "Calculating descriptive statistics via task.calculate_descriptive_statistics() (producing the mteb/descriptive_stats/<Type>/<TaskName>.json file) is stated in mteb's official contributor doc as a required step before submitting a PR, done to catch duplicates, too-small datasets, and too-short documents; every one of the sampled recent PRs (4710, 4487, 4521, 3991, 4226) included this JSON file in its diff, consistent with the doc being enforced in practice, not merely suggested.",
+     "source": "https://raw.githubusercontent.com/embeddings-benchmark/mteb/main/docs/contributing/adding_a_dataset.md",
+     "quote": "### Calculate descriptive statistics\\n\\nBefore creating a pull request, it is important to calculate some descriptive statistics about the dataset. This is to ensure that the dataset is not too small, does not contain duplicates and that the documents are not too short. ... To calculate the descriptive statistics, you can run [`task.calculate_descriptive_statistics()`]"
+    },
+    {
+     "claim": "mteb's official PR checklist (linked from PR bodies, e.g. #4226) requires: explaining the gap the dataset fills, confirming the dataset loads via the mteb package, running at least mteb/baseline-random-encoder plus one small real model (e.g. intfloat/multilingual-e5-small) and pasting scores into the PR, confirming scores are neither trivial/perfect nor random, reducing dataset size if too large, and reproducing paper scores in the PR description if applicable.",
+     "source": "https://raw.githubusercontent.com/embeddings-benchmark/mteb/main/docs/contributing/adding_a_dataset.md",
+     "quote": "- [ ] I have outlined why this dataset is filling an existing gap in `mteb`\\n- [ ] I have tested that the dataset runs with the `mteb` package.\\n- [ ] I have run the following models on the task (adding the results to the pr)...\\n  - [ ] `mteb/baseline-random encoder`\\n  - [ ] `intfloat/multilingual-e5-small` or another small model\\n- [ ] I have checked that the performance is neither trivial (close to perfect scores) nor random.\\n- [ ] I have considered the size of the dataset and reduced it if it is too big\\n- [ ] I reproduced scores from the original paper (if applicable)"
+    },
+    {
+     "claim": "mteb's semver/commit-message convention treats new dataset PRs as version-bump-triggering: a commit/PR title prefixed 'dataset:' (matching all 5 PR titles examined: 4710, 4487, 4521, 3991, 4226, 3876) auto-triggers a package version bump and PyPI/GitHub release on merge to main, so a Kazakh-retrieval PR should follow the same 'dataset: ...' title convention.",
+     "source": "https://raw.githubusercontent.com/embeddings-benchmark/mteb/main/docs/CONTRIBUTING.md",
+     "quote": "- `fix:` for patches\\n- `model:` for new models\\n- `dataset:` for new datasets and benchmarks\\n- `feat:` for minor versions\\n- `breaking:` for major versions\\n\\nAny commit with one of these prefixes will trigger a version bump upon merging to the main branch"
+    }
+   ],
+   "recommendations": [],
+   "open_questions": [
+    "Confirm whether huggingface.co/datasets/issai/kazqad-retrieval is gated because of a license click-through (common, low friction) vs. restricted/commercial access (would map to mteb's is_public=False + mteb-private pattern, requiring maintainer sign-off and possibly a curated allowlist entry in tests/test_abstasks/test_private_tasks.py) — the PR strategy differs sharply between these two cases and this could not be verified without inspecting the actual issai/kazqad-retrieval HF repo page/gate terms.",
+    "Whether the mteb maintainers' HF_TOKEN account (used in .github/workflows/dataset_loading.yml) already has access to issai/kazqad-retrieval — if not, the dataset-loading CI job will fail on PR regardless of the PR author's own HF access, and this must be resolved with a maintainer (likely KennethEnevoldsen or Samoed, the most active reviewers across all 6 PRs sampled) before or during review, e.g. by requesting they accept the gate or by mirroring to a public/'mteb'-org or 'mteb-private'-org HF repo as was done for ElasticKBRetrieval, LexRetrieval.v1, and ultimately BrowseCompPlusRetrieval.",
+    "Whether KazQAD's license permits mirroring/re-uploading under an mteb or mteb-private HF namespace at all (the BrowseComp-Plus and Elastic-KB precedents both required an explicit re-upload to a maintainer-controlled namespace before merge) — this needs checking against KazQAD's actual license terms, which were not fetched in this pass.",
+    "Whether to file the task under 'private' (is_public=False, needs an ACCEPTED_PRIVATE_TASKS allowlist entry reviewed by a maintainer) or push for full public un-gating before the PR — the two precedents that started gated/restricted (BrowseComp-Plus, Elastic KB) both ended up either fully public or is_public=False+mteb-private, never left simply 'gated under the original org', so the PR author should decide which target state to aim for up front and say so explicitly in the PR description to avoid the ~33-day BrowseComp-Plus-style back-and-forth.",
+    "Best current reviewer/maintainer to tag for a Kazakh retrieval/reranking dataset PR — Samoed and KennethEnevoldsen appear as reviewers/approvers on all 6 sampled PRs and are the de facto gatekeepers, but no evidence was gathered on who specifically handles non-English/lower-resource language additions or whether there's a language-specific champion (e.g. someone who handled Vietnamese/Danish additions) worth pinging."
+   ]
+  },
+  {
+   "area": "mteb-upstream/kazqad-upstream-status",
+   "findings": [
+    {
+     "claim": "mteb repo (embeddings-benchmark/mteb, main branch) contains ZERO references to 'KazQAD' anywhere in the codebase.",
+     "source": "GitHub code search API: gh api search/code -f q='KazQAD repo:embeddings-benchmark/mteb'",
+     "quote": "{\"total_count\":0,\"incomplete_results\":false,\"items\":[]}"
+    },
+    {
+     "claim": "mteb repo contains ZERO references to lowercase 'kazqad'.",
+     "source": "GitHub code search API: gh api search/code -f q='kazqad repo:embeddings-benchmark/mteb'",
+     "quote": "{\"total_count\":0,\"incomplete_results\":false,\"items\":[]}"
+    },
+    {
+     "claim": "mteb repo contains ZERO references to 'issai' (ISSAI, the institute behind KazQAD).",
+     "source": "GitHub code search API: gh api search/code -f q='issai repo:embeddings-benchmark/mteb'",
+     "quote": "{\"total_count\":0,\"incomplete_results\":false,\"items\":[]}"
+    },
+    {
+     "claim": "There is NO dedicated Kazakh retrieval task, NO 'kk-MTEB', and NO Kazakh-specific benchmark aggregation anywhere in the mteb repo.",
+     "source": "GitHub code search API: gh api search/code -f q='\"kk-MTEB\" OR \"KazakhMTEB\" OR \"MTEB-kk\" OR \"MTEB_KAZ\" repo:embeddings-benchmark/mteb'",
+     "quote": "{\"total_count\":0}"
+    },
+    {
+     "claim": "Kazakh (kaz-Cyrl / kk) appears ONLY as one of many languages inside general multilingual/cross-lingual tasks, never as its own dedicated Kazakh task or benchmark file.",
+     "source": "GitHub code search across embeddings-benchmark/mteb for 'kaz-Cyrl' and 'kaz' (64 total hits, deduplicated below after filtering false-positive author-name matches like 'Okazaki')",
+     "quote": "search for kaz-Cyrl: total 31 hits, all inside multilingual/ dirs or model_implementations/ (model language-support lists), none in a Kazakh-specific file"
+    },
+    {
+     "claim": "RETRIEVAL tasks in mteb that include Kazakh (kk/kaz-Cyrl) as one language among many: FleursA2TRetrieval / FleursT2ARetrieval (audio-text retrieval), WebFAQRetrieval (t2t), CommonVoiceMini17/21 A2T/T2A Retrieval (audio), BelebeleRetrieval (t2t, reading-comprehension based). None are text-embedding open-domain QA retrieval built from KazQAD or Kazakh Wikipedia.",
+     "source": "raw.githubusercontent.com/embeddings-benchmark/mteb/main/mteb/tasks/retrieval/multilingual/fleurs.py (line 56); .../web_faq_retrieval.py (line 30); .../common_voice.py (line 114); .../belebele_retrieval.py (line 60)",
+     "quote": "fleurs.py:56  \"kk_kz\": [\"kaz-Cyrl\"],  # Kazakh | web_faq_retrieval.py:30  \"kaz\": [\"kaz-Cyrl\"], | common_voice.py:114  \"kk\": [\"kaz-Cyrl\"], | belebele_retrieval.py:60  \"kaz_Cyrl\","
+    },
+    {
+     "claim": "BITEXT MINING tasks including Kazakh: WebFAQBitextMiningQuestions/QAs (aze-kaz, kaz-tur, eng-kaz pairs), TatoebaBitextMining (kaz-eng), FloresBitextMining (kaz_Cyrl), NTREXBitextMining (kaz_Cyrl, grouped as 'Turkic').",
+     "source": "raw.githubusercontent.com/embeddings-benchmark/mteb/main/mteb/tasks/bitext_mining/multilingual/web_faq_bitext_mining.py (lines 138,140,169); .../tatoeba_bitext_mining.py (line 18); .../flores_bitext_mining.py (line 181); .../ntrex_bitext_mining.py (line 100)",
+     "quote": "web_faq_bitext_mining.py:138  \"aze-kaz\": [\"aze-Latn\", \"kaz-Cyrl\"] | tatoeba_bitext_mining.py:18  \"kaz-eng\": [\"kaz-Cyrl\", \"eng-Latn\"], | flores_bitext_mining.py:181  \"kaz_Cyrl\", | ntrex_bitext_mining.py:100  \"kaz_Cyrl\": {\"group\": \"Turkic\"},"
+    },
+    {
+     "claim": "CLASSIFICATION/CLUSTERING tasks including Kazakh: TurkicClassification (kk: kaz-Cyrl, ky, ba), CyrillicTurkicLangClassification (kaz-Cyrl among tat/kir/rus/tyv/krc/sah), SIBFLEURS (audio classification, kaz_Cyrl), SIB200Classification / SIB200Classification.v2 (kaz_Cyrl), SIB200ClusteringS2S (kaz_Cyrl).",
+     "source": "raw.githubusercontent.com/embeddings-benchmark/mteb/main/mteb/tasks/classification/multilingual/turkic_classification.py (line 25); .../cyrillic_turkic_lang_classification.py (line 24); .../sibfleurs.py (line 49); .../sib200_classification.py (line 89); mteb/tasks/clustering/multilingual/sib200_clustering_s2s.py (line 91)",
+     "quote": "turkic_classification.py:25 \"kk\": [\"kaz-Cyrl\"], | cyrillic_turkic_lang_classification.py:24 \"kaz-Cyrl\",  # Kazakh | sib200_classification.py:89 \"kaz_Cyrl\": [\"kaz-Cyrl\"],"
+    },
+    {
+     "claim": "CyrillicTurkicLangClassification (which includes Kazakh) is a member of the MTEB(Multilingual, v2) benchmark aggregation, aliased 'MTEB(Multilingual)' / 'MMTEB' — this is the only upstream aggregation Kazakh tasks belong to; there is no Kazakh-specific or Central-Asian/Turkic-specific benchmark object anywhere in mteb.",
+     "source": "raw.githubusercontent.com/embeddings-benchmark/mteb/main/mteb/benchmarks/benchmarks/benchmarks.py (mteb_multilingual_tasks list, line ~930; MTEB_multilingual_v2 Benchmark object, line ~1043)",
+     "quote": "mteb_multilingual_tasks = get_tasks(tasks=[... \"CyrillicTurkicLangClassification\", ...]) ... MTEB_multilingual_v2 = Benchmark(name=\"MTEB(Multilingual, v2)\", aliases=[\"MTEB(Multilingual)\", \"MMTEB\"], ... reference=\"https://arxiv.org/abs/2502.13595\")"
+    },
+    {
+     "claim": "The MMTEB paper (arXiv:2502.13595) itself, as fetched, contains no explicit mention of 'Kazakh', 'kaz', 'kk', KazQAD, ISSAI, or a Turkic/Central Asian task grouping in the sections retrievable via WebFetch.",
+     "source": "https://arxiv.org/abs/2502.13595 and https://arxiv.org/html/2502.13595v2 (fetched via WebFetch)",
+     "quote": "\"there is no mention of Kazakh language retrieval tasks, KazQAD, or any Kazakh-specific benchmarks\" / \"No matches found\" for kaz/kk/Turkic/Central Asian/KazQAD/ISSAI",
+     "unverified": true
+    },
+    {
+     "claim": "No Kazakh-only retrieval task file exists in mteb/tasks/retrieval/ under a language-specific directory (e.g. no mteb/tasks/retrieval/kaz/ directory), unlike e.g. Persian (mteb/tasks/retrieval/fas/beir_fa.py, fa_mteb_retrieval.py).",
+     "source": "GitHub code search across embeddings-benchmark/mteb for 'kaz' (64 total hits) — manual filtering of all hits shows no kaz/ directory under tasks/retrieval, tasks/classification, or tasks/bitext_mining (compare to existing eng/, fas/, kur/ language-specific dirs)",
+     "quote": "search hits list includes mteb/tasks/retrieval/fas/beir_fa.py, mteb/tasks/retrieval/fas/fa_mteb_retrieval.py, mteb/tasks/classification/kur/kurdish_sentiment_classification.py as monolingual-dir examples; no analogous mteb/tasks/*/kaz/ path appears in any of the 64 hits"
+    },
+    {
+     "claim": "The original KazQAD paper (arXiv:2404.04487, IS2AI/ISSAI) reports retrieval baselines NDCG@10=0.389, MRR=0.382 on a corpus of ~800K Kazakh Wikipedia passages with ~6,000 questions — this is the dataset a PR would need to newly wrap into an mteb AbsTaskRetrieval, since it does not exist upstream.",
+     "source": "https://arxiv.org/pdf/2404.04487 ; https://github.com/IS2AI/KazQAD",
+     "quote": "\"Baseline retrievers and readers achieve reasonable scores in retrieval (NDCG10 = 0.389 MRR = 0.382)...\""
+    }
+   ],
+   "recommendations": [],
+   "open_questions": [
+    "Whether the MMTEB paper's full PDF (not just the HTML/abstract render fetched here) mentions Kazakh anywhere in its appendix task tables — the WebFetch tool may have truncated or summarized large sections; a PR author should grep the actual LaTeX source or PDF text directly rather than rely on this fetch.",
+    "Whether mteb has an open GitHub issue or PR (merged or in-review) proposing KazQAD/Kazakh retrieval addition — this reconnaissance only checked the current main branch code, not the Issues/PRs history; should run `gh api search/issues -f q='KazQAD repo:embeddings-benchmark/mteb'` and check embeddings-benchmark/mteb open PRs before assuming no one has already started this.",
+    "Whether 'kk-MTEB' is referenced anywhere outside the mteb repo itself (e.g. in a separate community leaderboard space on Hugging Face, or in MTEB's task-metadata YAML/registry rather than Python source) — code search only covers the mteb repo, not the broader mteb-adjacent ecosystem (e.g. HF mteb/leaderboard space, sentence-transformers docs).",
+    "Exact required AbsTaskRetrieval subclass conventions (metadata schema fields: eval_splits, dataset revision pinning, main_score, domains, task_subtypes, license, annotations_creators, dialect, sample_creation, bibtex_citation) — need to read one recently-merged retrieval PR in full (e.g. BelebeleRetrieval or WebFAQRetrieval) as a template before drafting the KazQAD PR.",
+    "Whether ISSAI/IS2AI (KazQAD's authors) already publish a HuggingFace `datasets` loader in a format directly consumable by mteb's AbsTaskRetrieval (corpus/queries/qrels split), or whether the PR needs a data-reshaping step — confirm at https://huggingface.co/datasets/issai/kazqad."
+   ]
+  }
+ ]
+}
